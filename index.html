@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>david&#39;s life</title>
+    <title>David&#39;s life</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="David Ren">
@@ -12,15 +12,15 @@
 
     
     <meta property="og:type" content="website">
-<meta property="og:title" content="david&#39;s life">
+<meta property="og:title" content="David&#39;s life">
 <meta property="og:url" content="https://rendawei.dev/index.html">
-<meta property="og:site_name" content="david&#39;s life">
+<meta property="og:site_name" content="David&#39;s life">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="David Ren">
 <meta name="twitter:card" content="summary">
 
     
-    <link rel="alternative" href="/atom.xml" title="david&#39;s life" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="David&#39;s life" type="application/atom+xml">
     
     
     <link rel="icon" href="/img/logo.ico">
@@ -40,11 +40,11 @@
 <div>
 		
 			<div id="imglogo">
-				<a href="/"><img src="/img/logo.png" alt="david&#39;s life" title="david&#39;s life"/></a>
+				<a href="/"><img src="/img/logo.png" alt="David&#39;s life" title="David&#39;s life"/></a>
 			</div>
 			
 			<div id="textlogo">
-				<h1 class="site-name"><a href="/" title="david&#39;s life">david&#39;s life</a></h1>
+				<h1 class="site-name"><a href="/" title="David&#39;s life">David&#39;s life</a></h1>
 				<h2 class="blog-motto">欢迎来到这个博客，希望你能找到一些有用的信息！</h2>
 			</div>
 			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
@@ -81,54 +81,33 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2025/02/10/博客简易搭建指南/" title="博客简易搭建指南" itemprop="url">博客简易搭建指南</a>
+      <a href="/2025/05/06/2025-05-06-五一假期结束后的第一天/" title="2025/05/06 五一假期结束后的第一天......" itemprop="url">2025/05/06 五一假期结束后的第一天......</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
 		
   <p class="article-time">
-    <time datetime="2025-02-10T08:19:36.000Z" itemprop="datePublished"> 发表于 2025-02-10</time>
+    <time datetime="2025-05-06T14:21:46.000Z" itemprop="datePublished"> 发表于 2025-05-06</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <p>今年过年回家，感觉格外地忙。跑东跑西的吃饭，还有很多小事儿，加上放假时间也短，搞科研应该是行不通了。趁这个时间搞了个个人网站出来，以后就有地方可以写博客了。大概是年初三开始研究，初五初六做完了，一共耗时6个小时，这里把具体的过程写在这里，给有需要的同学参考。</p>
-<h2 id="选域名"><a href="#选域名" class="headerlink" title="选域名"></a>选域名</h2><p>说到做网页，尤其是做个人网页，第一件事肯定是选域名，我是在<a target="_blank" rel="noopener" href="https://www.godaddy.com/">GoDaddy</a>上买的域名，也可以在<a target="_blank" rel="noopener" href="https://www.namecheap.com/">Namecheap</a>之类的域名网站买，尽量找大一些的网站。</p>
-<p>我在检索的时候发现没有rendawei.com了，在rendawei1210.com、rendawei.me和rendawei.dev这三个域名中纠结了蛮久的，最后选了最便宜的.dev，价格大概是500块&#x2F;3年左右。因为我职业也算是半个码农，所以.dev也算是合乎我原本决定的网站做技术博客的调性。在这里说明一下，在选择.dev网站时候，网站会提示必须使用https，但这个很好办，我们把网站托管到github上的话本身就是带https的，所以不用担心这点。</p>
-<h2 id="安装网页框架"><a href="#安装网页框架" class="headerlink" title="安装网页框架"></a>安装网页框架</h2><p>我选择用了Hexo这个静态网站生成器，因为我主要是写博客用，不需要研究那些前端的东西所以选择了这个，搭配了Jacman主题。Hexo是用Node.js的，算是一个比较老的生成器，这个的好处就是后面写博客部署很方便，换机器之类的也不会很麻烦，直接复制yml就可以，而且生成静态网站，加载速度很快，写写博客不错。</p>
-<p>下面的教程适用linux系统</p>
-<p>首先要安装Node.js环境和npm包管理器：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install nodejs npm</span><br></pre></td></tr></table></figure>
-<p>接下来需要安装Hexo：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
-<p>到这里可以检查一下是否安装成功</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
-<p>安装网页生成器框架就到此为止。</p>
-<h2 id="创建Hexo项目"><a href="#创建Hexo项目" class="headerlink" title="创建Hexo项目"></a>创建Hexo项目</h2><p>首先cd进你想创建博客的目录，然后开始创建一个新的Hexo项目：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo init myblog</span><br><span class="line">cd myblog</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
-<p>上面的操作将会创建一个新的Hexo博客，并安装所需要的依赖。<br>然后如果想用Jacman主题的话，cd进Hexo的根目录：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/wuchong/jacman.git themes/jacman</span><br></pre></td></tr></table></figure>
-<p>安装完成后，编辑Hexo配置文件<code>/_config.yml</code>，将主题设置为Jacman。</p>
-<h2 id="配置GitHub-Pages"><a href="#配置GitHub-Pages" class="headerlink" title="配置GitHub Pages"></a>配置GitHub Pages</h2><p>首先进入github，创建一个新的仓库，一定要public，命名为<code>rendawei.github.io</code>这是github pages的标准命名格式。</p>
-<p>然后编辑Hexo配置文件<code>/_config.yml</code>，修改配置为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: https://github.com/yourusername/username.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
-<p>然后执行：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-<p>再进行部署：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-<p>部署完成后，你可以在浏览器中访问 <a target="_blank" rel="noopener" href="https://yourusername.github.io/">https://yourusername.github.io</a> 来查看你的博客。</p>
-<h2 id="将域名指向GitHub-Pages"><a href="#将域名指向GitHub-Pages" class="headerlink" title="将域名指向GitHub Pages"></a>将域名指向GitHub Pages</h2><p>这里需要在你购买的域名服务提供商，将域名指向GitHub Pages，需要再服务商网页中设置以下DNS记录</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">185.199.108.153</span><br><span class="line">185.199.109.153</span><br><span class="line">185.199.110.153</span><br><span class="line">185.199.111.153</span><br></pre></td></tr></table></figure>
-<p>同时，在github repo的页面下，创建一个名为<code>CNAME</code>的文件，不要有后缀，内容是自定义的域名，如：rendawei.dev</p>
-<h2 id="本地测试与调试"><a href="#本地测试与调试" class="headerlink" title="本地测试与调试"></a>本地测试与调试</h2><p>你可以使用 Hexo 本地预览命令来查看网站效果：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-<p>然后在浏览器里访问<code>http://localhost:4000</code>，进行本地查看。<br>最后，你可以根据你的需要优化你的Hexo博客，调整Jacman主题中的<code>/_config.yml</code>，添加插件，编写博客文章等。<br>写在最后：不要忘了提交你的代码到github上哦，<code>hexo deploy</code>仅仅是提交了网页的public上去，如果想保存网页内容，请记得及时提交备份。</p>
+        1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 
+1111
+1
+1
+1
+1
+1
+test
         
         
         <p class="article-more-link">
+          
+            <a href="/2025/05/06/2025-05-06-%E4%BA%94%E4%B8%80%E5%81%87%E6%9C%9F%E7%BB%93%E6%9D%9F%E5%90%8E%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9/#more">Read More</a>
           
        </p>
     </div>
@@ -161,24 +140,30 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2025/02/10/漫谈图像分割/" title="漫谈图像分割" itemprop="url">漫谈图像分割</a>
+      <a href="/2025/02/10/博客简易搭建指南/" title="博客简易搭建指南" itemprop="url">博客简易搭建指南</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
 		
   <p class="article-time">
-    <time datetime="2025-02-10T08:11:33.000Z" itemprop="datePublished"> 发表于 2025-02-10</time>
+    <time datetime="2025-02-10T08:19:36.000Z" itemprop="datePublished"> 发表于 2025-02-10</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <p>我目前的研究方向是<em>隐蔽目标识别</em>，算是图像分割的一个小类，所以对图像分割有一些小小心得，</p>
+        今年过年回家，感觉格外地忙。跑东跑西的吃饭，还有很多小事儿，加上放假时间也短，搞科研应该是行不通了。趁这个时间搞了个个人网站出来，以后就有地方可以写博客了。大概是年初三开始研究，初五初六做完了，一共耗时6个小时，这里把具体的过程写在这里，给有需要的同学参考。
 
+选域名
+说到做网页，尤其是做个人网页，第一件事肯定是选域名，我是在GoDaddy上买的域名，也可以在Namecheap之类的域名网站买，尽量找大一些的网站。
+
+我在检索的时候发现没有rendawei.com了，在rendawei1210.com、rendawei.me和rendawei.dev这三个域名中纠结了蛮久的，最后选了最便宜的.
         
         
         <p class="article-more-link">
+          
+            <a href="/2025/02/10/%E5%8D%9A%E5%AE%A2%E7%AE%80%E6%98%93%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/#more">Read More</a>
           
        </p>
     </div>
@@ -242,6 +227,18 @@
             
           </li>
         
+          <li>
+            
+            	<a href="https://chat.openai.com/" target="_blank" title="Chatgpt">Chatgpt</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://chat.ustc.edu.cn/" target="_blank" title="Deepseek">Deepseek</a>
+            
+          </li>
+        
     </ul>
 </div>
 
@@ -266,7 +263,7 @@
 	
 	<section class="info">
 		<p> 我喜欢户外运动、手工、电子游戏 <br/>
-			还喜欢旅行、写博客和研究新技术</p>
+			还喜欢旅行、写博客和做饭</p>
 	</section>
 	 
 	<div class="social-font" class="clearfix">
