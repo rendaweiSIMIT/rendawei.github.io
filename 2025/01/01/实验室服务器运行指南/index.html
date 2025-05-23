@@ -1,0 +1,726 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>实验室服务器运行指南 | David&#39;s life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="David Ren">
+    
+
+    
+    <meta name="description" content="面向 Ubuntu 20.04 &#x2F; 22.04 + NVIDIA 2080 Ti × 8 服务器，从显卡驱动到 Conda 环境及 多用户协同规范 一篇搞定。  目录  1.  选择 Miniconda 的理由  2.  系统前置：驱动与 CUDA  3.  下载并安装 Miniconda  4.  首次启动与基础配置  5.  配置国内镜像.condarc  6.  CUDA Toolkit &amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实验室服务器运行指南">
+<meta property="og:url" content="https://rendawei.dev/2025/01/01/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%90%E8%A1%8C%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="David&#39;s life">
+<meta property="og:description" content="面向 Ubuntu 20.04 &#x2F; 22.04 + NVIDIA 2080 Ti × 8 服务器，从显卡驱动到 Conda 环境及 多用户协同规范 一篇搞定。  目录  1.  选择 Miniconda 的理由  2.  系统前置：驱动与 CUDA  3.  下载并安装 Miniconda  4.  首次启动与基础配置  5.  配置国内镜像.condarc  6.  CUDA Toolkit &amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-12-31T16:00:01.000Z">
+<meta property="article:modified_time" content="2025-05-23T15:21:33.530Z">
+<meta property="article:author" content="David Ren">
+<meta property="article:tag" content="服务器操作">
+<meta name="twitter:card" content="summary">
+
+    
+    <link rel="alternative" href="/atom.xml" title="David&#39;s life" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/logo.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="David&#39;s life" title="David&#39;s life"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="David&#39;s life">David&#39;s life</a></h1>
+				<h2 class="blog-motto">欢迎来到这个博客，希望你能找到一些有用的信息！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/2025/01/01/David’s-To-Do-List/">To-Do List</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:rendawei.dev">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2025/01/01/实验室服务器运行指南/" title="实验室服务器运行指南" itemprop="url">实验室服务器运行指南</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
+		
+  <p class="article-time">
+    <time datetime="2024-12-31T16:00:01.000Z" itemprop="datePublished"> 发表于 2025-01-01</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%89%E6%8B%A9-Miniconda-%E7%9A%84%E7%90%86%E7%94%B1"><span class="toc-number">2.</span> <span class="toc-text">选择 Miniconda 的理由</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%89%8D%E7%BD%AE%EF%BC%9A%E9%A9%B1%E5%8A%A8%E4%B8%8E-CUDA"><span class="toc-number">3.</span> <span class="toc-text">系统前置：驱动与 CUDA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%B9%B6%E5%AE%89%E8%A3%85-Miniconda"><span class="toc-number">4.</span> <span class="toc-text">下载并安装 Miniconda</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A6%96%E6%AC%A1%E5%90%AF%E5%8A%A8%E4%B8%8E%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE"><span class="toc-number">5.</span> <span class="toc-text">首次启动与基础配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F-condarc"><span class="toc-number">6.</span> <span class="toc-text">配置国内镜像 .condarc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CUDA-Toolkit-cuDNN-%E5%AE%89%E8%A3%85%E6%96%B9%E6%A1%88"><span class="toc-number">7.</span> <span class="toc-text">CUDA Toolkit &amp; cuDNN 安装方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88-A%EF%BC%9A%E7%B3%BB%E7%BB%9F%E7%BA%A7-CUDA%EF%BC%88%E9%A9%B1%E5%8A%A8%E8%87%AA%E5%B8%A6%EF%BC%89"><span class="toc-number">7.1.</span> <span class="toc-text">方案 A：系统级 CUDA（驱动自带）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88-B%EF%BC%9AConda-CUDA%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="toc-number">7.2.</span> <span class="toc-text">方案 B：Conda CUDA（推荐）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%8E%AF%E5%A2%83%E7%A4%BA%E4%BE%8B"><span class="toc-number">8.</span> <span class="toc-text">创建深度学习环境示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A-GPU-%E8%B0%83%E4%BC%98%E8%A6%81%E7%82%B9"><span class="toc-number">9.</span> <span class="toc-text">多 GPU 调优要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C%E4%B8%8E-GPU-%E4%BD%BF%E7%94%A8%E5%85%AC%E7%BA%A6"><span class="toc-number">10.</span> <span class="toc-text">多人协作与 GPU 使用公约</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%8A%E6%9C%BA%E5%89%8D%E5%85%88-%E2%80%9C%E7%9C%8B%E4%B8%80%E7%9C%BC%E2%80%9D"><span class="toc-number">10.1.</span> <span class="toc-text">1. 上机前先 “看一眼”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="toc-number">10.2.</span> <span class="toc-text">2. 进程管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%98%BE%E5%8D%A1%E7%BB%91%E5%AE%9A%E7%AD%96%E7%95%A5"><span class="toc-number">10.3.</span> <span class="toc-text">3. 显卡绑定策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E8%B5%84%E6%BA%90%E9%85%8D%E9%A2%9D%E4%B8%8E%E6%8E%92%E7%A8%8B"><span class="toc-number">10.4.</span> <span class="toc-text">4. 资源配额与排程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB"><span class="toc-number">10.5.</span> <span class="toc-text">5. 环境隔离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E7%B4%A7%E6%80%A5%E5%A4%84%E7%90%86"><span class="toc-number">10.6.</span> <span class="toc-text">6. 紧急处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E7%AE%A1%E7%90%86%E9%80%9F%E6%9F%A5%E8%A1%A8"><span class="toc-number">11.</span> <span class="toc-text">环境管理速查表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E9%80%9F%E6%8A%80%E5%B7%A7%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">12.</span> <span class="toc-text">提速技巧与最佳实践</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-FAQ"><span class="toc-number">13.</span> <span class="toc-text">常见问题 FAQ</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%A4%87%E4%BB%BD%E4%B8%8E%E8%BF%81%E7%A7%BB"><span class="toc-number">14.</span> <span class="toc-text">环境备份与迁移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">15.</span> <span class="toc-text">参考链接</span></a></li></ol>
+		
+		</div>
+		
+		<blockquote>
+<p>面向 <strong>Ubuntu 20.04 &#x2F; 22.04 + NVIDIA 2080 Ti × 8</strong> 服务器，从显卡驱动到 Conda 环境及 <strong>多用户协同规范</strong> 一篇搞定。</p>
+</blockquote>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#%E9%80%89%E6%8B%A9-miniconda-%E7%9A%84%E7%90%86%E7%94%B1">选择 Miniconda 的理由</a></li>
+<li><a href="#%E7%B3%BB%E7%BB%9F%E5%89%8D%E7%BD%AE%E9%A9%B1%E5%8A%A8%E4%B8%8E-cuda">系统前置：驱动与 CUDA</a></li>
+<li><a href="#%E4%B8%8B%E8%BD%BD%E5%B9%B6%E5%AE%89%E8%A3%85-miniconda">下载并安装 Miniconda</a></li>
+<li><a href="#%E9%A6%96%E6%AC%A1%E5%90%AF%E5%8A%A8%E4%B8%8E%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE">首次启动与基础配置</a></li>
+<li><a href="#%E9%85%8D%E7%BD%AE%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8Fcondarc">配置国内镜像 <code>.condarc</code></a></li>
+<li><a href="#cuda-toolkit--cudnn-%E5%AE%89%E8%A3%85%E6%96%B9%E6%A1%88">CUDA Toolkit &amp; cuDNN 安装方案</a></li>
+<li><a href="#%E5%88%9B%E5%BB%BA%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%8E%AF%E5%A2%83%E7%A4%BA%E4%BE%8B">创建深度学习环境示例</a></li>
+<li><a href="#%E5%A4%9A-gpu-%E8%B0%83%E4%BC%98%E8%A6%81%E7%82%B9">多 GPU 调优要点</a></li>
+<li><a href="#%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C%E4%B8%8E-gpu-%E4%BD%BF%E7%94%A8%E5%85%AC%E7%BA%A6">多人协作与 GPU 使用公约</a></li>
+<li><a href="#%E7%8E%AF%E5%A2%83%E7%AE%A1%E7%90%86%E9%80%9F%E6%9F%A5%E8%A1%A8">环境管理速查表</a></li>
+<li><a href="#%E6%8F%90%E9%80%9F%E6%8A%80%E5%B7%A7%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5">提速技巧与最佳实践</a></li>
+<li><a href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-faq">常见问题 FAQ</a></li>
+<li><a href="#%E7%8E%AF%E5%A2%83%E5%A4%87%E4%BB%BD%E4%B8%8E%E8%BF%81%E7%A7%BB">环境备份与迁移</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5">参考链接</a></li>
+</ol>
+<hr>
+<h2 id="选择-Miniconda-的理由"><a href="#选择-Miniconda-的理由" class="headerlink" title="选择 Miniconda 的理由"></a>选择 Miniconda 的理由</h2><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>体积</th>
+<th>控制粒度</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker + Conda</strong></td>
+<td>镜像可大</td>
+<td>高</td>
+<td>云端 CI&#x2F;CD &amp; 环境隔离</td>
+</tr>
+<tr>
+<td><strong>Anaconda</strong></td>
+<td>&gt; 4 GB</td>
+<td>低</td>
+<td>桌面一次装好所有数据科学包</td>
+</tr>
+<tr>
+<td><strong>Miniconda</strong></td>
+<td>≈ 100 MB</td>
+<td><strong>最高</strong></td>
+<td>生产服务器 &#x2F; 多 GPU 深度学习</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>精简</strong>：仅含 <code>conda</code> 和依赖，减少磁盘与冲突。</li>
+<li><strong>跨平台</strong>：相同 YAML 可在本地、云端复现。</li>
+<li><strong>生态</strong>：配合 <code>conda‑forge</code> &#x2F; <code>pytorch</code> 通道即可拿到预编译 CUDA 包。</li>
+</ul>
+<h2 id="系统前置：驱动与-CUDA"><a href="#系统前置：驱动与-CUDA" class="headerlink" title="系统前置：驱动与 CUDA"></a>系统前置：驱动与 CUDA</h2><blockquote>
+<p>下文示例基于 <strong>Ubuntu 22.04 + NVIDIA Driver 535 + CUDA 12.1</strong>。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 添加官方 PPA 并安装驱动（重启后生效）</span></span><br><span class="line"><span class="built_in">sudo</span> add-apt-repository ppa:graphics-drivers/ppa -y</span><br><span class="line"><span class="built_in">sudo</span> apt update &amp;&amp; <span class="built_in">sudo</span> apt install nvidia-driver-535 -y</span><br><span class="line"><span class="comment"># 查看版本</span></span><br><span class="line">nvidia-smi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. CUDA 工具链（若走 Conda 内置可跳过）</span></span><br><span class="line">wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">mv</span> cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600</span><br><span class="line"><span class="built_in">sudo</span> apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub</span><br><span class="line"><span class="built_in">sudo</span> add-apt-repository <span class="string">&quot;deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /&quot;</span> -y</span><br><span class="line"><span class="built_in">sudo</span> apt update &amp;&amp; <span class="built_in">sudo</span> apt install cuda-toolkit-12-1 -y</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>提示</strong>：若采用 <strong>Conda CUDA</strong>，可仅安装显卡驱动即可，CUDA runtime 由环境包提供。</p>
+</blockquote>
+<h2 id="下载并安装-Miniconda"><a href="#下载并安装-Miniconda" class="headerlink" title="下载并安装 Miniconda"></a>下载并安装 Miniconda</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 国内镜像（清华）</span></span><br><span class="line">wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-latest-Linux-x86_64.sh</span><br><span class="line">bash Miniconda3-latest-Linux-x86_64.sh</span><br><span class="line"><span class="comment"># 推荐安装路径：~/miniconda3，并选 yes 执行 `conda init`</span></span><br></pre></td></tr></table></figure>
+
+<p>激活设置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc      <span class="comment"># 或 ~/.zshrc</span></span><br><span class="line">conda --version</span><br></pre></td></tr></table></figure>
+
+<h2 id="首次启动与基础配置"><a href="#首次启动与基础配置" class="headerlink" title="首次启动与基础配置"></a>首次启动与基础配置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 更新自身</span></span><br><span class="line">conda update -n base -c defaults conda</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭 base 自动激活</span></span><br><span class="line">conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装 mamba 提速</span></span><br><span class="line">conda install -n base -c conda-forge mamba</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置国内镜像-condarc"><a href="#配置国内镜像-condarc" class="headerlink" title="配置国内镜像 .condarc"></a>配置国内镜像 <code>.condarc</code></h2><p>路径：<code>~/.condarc</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">channels:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">pytorch</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">nvidia</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">conda-forge</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">defaults</span></span><br><span class="line"><span class="attr">channel_priority:</span> <span class="string">flexible</span></span><br><span class="line"><span class="attr">show_channel_urls:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认 &amp; 自定义镜像（清华）</span></span><br><span class="line"><span class="attr">default_channels:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r</span></span><br><span class="line"><span class="attr">custom_channels:</span></span><br><span class="line">  <span class="attr">conda-forge:</span> <span class="string">https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</span></span><br><span class="line">  <span class="attr">pytorch:</span> <span class="string">https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</span></span><br><span class="line">  <span class="attr">nvidia:</span> <span class="string">https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 清理索引缓存</span></span><br><span class="line">conda clean -i</span><br></pre></td></tr></table></figure>
+
+<h2 id="CUDA-Toolkit-cuDNN-安装方案"><a href="#CUDA-Toolkit-cuDNN-安装方案" class="headerlink" title="CUDA Toolkit &amp; cuDNN 安装方案"></a>CUDA Toolkit &amp; cuDNN 安装方案</h2><h3 id="方案-A：系统级-CUDA（驱动自带）"><a href="#方案-A：系统级-CUDA（驱动自带）" class="headerlink" title="方案 A：系统级 CUDA（驱动自带）"></a>方案 A：系统级 CUDA（驱动自带）</h3><ul>
+<li><strong>优点</strong>：<code>nvcc</code> 可全局使用；可编译自定义 CUDA Kernel。</li>
+<li><strong>缺点</strong>：升级麻烦；多项目不同 CUDA 版本难以共存。</li>
+</ul>
+<h3 id="方案-B：Conda-CUDA（推荐）"><a href="#方案-B：Conda-CUDA（推荐）" class="headerlink" title="方案 B：Conda CUDA（推荐）"></a>方案 B：Conda CUDA（推荐）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mamba create -n dl python=3.10 cudatoolkit=12.1 cudnn=8.9 -c nvidia -c conda-forge</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>优点</strong>：环境级隔离，锁定版本，彻底避免系统污染。</li>
+<li><strong>缺点</strong>：需在 Conda 环境内运行可执行文件。</li>
+</ul>
+<blockquote>
+<p><strong>2080 Ti</strong> 在 CUDA 12 上表现正常；若需编译旧项目，可切换 <code>cudatoolkit=11.8</code>。</p>
+</blockquote>
+<h2 id="创建深度学习环境示例"><a href="#创建深度学习环境示例" class="headerlink" title="创建深度学习环境示例"></a>创建深度学习环境示例</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mamba create -n torch2 python=3.10 pytorch=2.3 torchvision torchaudio pytorch-cuda=12.1 \</span><br><span class="line">    ninja numpy pandas scipy matplotlib jupyterlab ipykernel -c pytorch -c nvidia -c conda-forge</span><br><span class="line"></span><br><span class="line"><span class="comment"># 激活并注册 Jupyter 内核</span></span><br><span class="line">conda activate torch2</span><br><span class="line">python -m ipykernel install --user --name torch2 --display-name <span class="string">&quot;PyTorch 2 (CUDA12.1)&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>TensorFlow 2.16 GPU 版示例：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mamba create -n tf2 python=3.10 tensorflow=2.16 cudnn=8.9 -c conda-forge -c nvidia</span><br></pre></td></tr></table></figure>
+
+<h2 id="多-GPU-调优要点"><a href="#多-GPU-调优要点" class="headerlink" title="多 GPU 调优要点"></a>多 GPU 调优要点</h2><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>export NCCL_SOCKET_IFNAME=eth0</code></td>
+<td>指定 RDMA&#x2F;以太网接口，避免环回 slow path</td>
+</tr>
+<tr>
+<td><code>export NCCL_IB_DISABLE=1</code></td>
+<td>无 InfiniBand 时可关闭，减少 NCCL 超时</td>
+</tr>
+<tr>
+<td><code>export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7</code></td>
+<td>控制进程可见显卡顺序</td>
+</tr>
+<tr>
+<td><code>export TORCH_CUDA_ARCH_LIST=7.5</code></td>
+<td>编译自定义算子时加速（2080 Ti 架构 7.5）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>Tip</strong>：多卡训练使用 <code>torchrun --nproc_per_node=8</code> 或 <code>deepspeed</code>，并开启 <code>--pin_memory</code> 及混合精度。请定期监控 <code>nvidia-smi dmon</code>。</p>
+</blockquote>
+<h2 id="多人协作与-GPU-使用公约"><a href="#多人协作与-GPU-使用公约" class="headerlink" title="多人协作与 GPU 使用公约"></a>多人协作与 GPU 使用公约</h2><blockquote>
+<p><strong>服务器是大家的生产力工具，以下约定请务必遵守：</strong></p>
+</blockquote>
+<h3 id="1-上机前先-“看一眼”"><a href="#1-上机前先-“看一眼”" class="headerlink" title="1. 上机前先 “看一眼”"></a>1. 上机前先 “看一眼”</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nvidia-smi                <span class="comment"># 官方命令</span></span><br><span class="line"><span class="built_in">alias</span> gpustat=<span class="string">&#x27;watch -n1 gpustat -cpu&#x27;</span>   <span class="comment"># 推荐安装 gpustat</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>不占空闲显卡</strong>：优先使用温度低、显存占用为 0 的卡。</li>
+<li><strong>确认进程归属</strong>：<code>nvidia-smi</code> 中显示的 <code>username</code> 不是你 → 不要动。</li>
+</ul>
+<h3 id="2-进程管理"><a href="#2-进程管理" class="headerlink" title="2. 进程管理"></a>2. 进程管理</h3><ul>
+<li><strong>绝不手动 <code>kill -9</code> 他人进程</strong>。若需沟通请先联系群&#x2F;Slack。</li>
+<li><strong>避免僵尸进程</strong>：使用 <code>tmux</code> &#x2F; <code>screen</code> &#x2F; <code>nohup</code> 运行训练脚本，断线不中断。</li>
+<li><strong>日志必留</strong>：<code>python train.py &gt; logs/$(date +%F_%T).log 2&gt;&amp;1 &amp;</code>，方便定位问题。</li>
+</ul>
+<h3 id="3-显卡绑定策略"><a href="#3-显卡绑定策略" class="headerlink" title="3. 显卡绑定策略"></a>3. 显卡绑定策略</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 仅让脚本看到指定 GPU:</span></span><br><span class="line">CUDA_VISIBLE_DEVICES=2,3 python train.py --gpus 2</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>不要跨卡抢占</strong>：4 张卡的任务就绑 4 张相邻的，不要留下碎片。</li>
+<li><strong>自动分配脚本</strong>：可安装 <code>pip install greencall</code> 或使用下列片段：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">free_gpu=$(python - &lt;&lt;<span class="string">&#x27;PY&#x27;</span></span><br><span class="line">import GPUtil,os</span><br><span class="line">ids=[g.id <span class="keyword">for</span> g <span class="keyword">in</span> GPUtil.getAvailable(order=<span class="string">&#x27;memory&#x27;</span>,<span class="built_in">limit</span>=1)]</span><br><span class="line"><span class="built_in">print</span>(ids[0] <span class="keyword">if</span> ids <span class="keyword">else</span> <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">PY)</span><br><span class="line">CUDA_VISIBLE_DEVICES=<span class="variable">$free_gpu</span> python train.py &amp;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-资源配额与排程"><a href="#4-资源配额与排程" class="headerlink" title="4. 资源配额与排程"></a>4. 资源配额与排程</h3><ul>
+<li><strong>长期任务 (&gt;24h)</strong> 建议用 Slurm 或 cron 配合队列。</li>
+<li>实验室小规模可采用 <code>at</code> 或简单 Bash 排队脚本。</li>
+</ul>
+<h3 id="5-环境隔离"><a href="#5-环境隔离" class="headerlink" title="5. 环境隔离"></a>5. 环境隔离</h3><ul>
+<li>每个项目 &#x2F; 学生单独 Conda env，避免 “依赖地狱”。</li>
+<li><code>conda env export &gt; env.yml</code> 分享复现实验环境。</li>
+</ul>
+<h3 id="6-紧急处理"><a href="#6-紧急处理" class="headerlink" title="6. 紧急处理"></a>6. 紧急处理</h3><ul>
+<li><p>若发现占满显卡却无所属用户、且超过 6 小时无日志更新：</p>
+<ol>
+<li>截图 <code>nvidia-smi</code> 和 <code>ps -aux | grep pid</code> 保存证据。</li>
+<li>在群里 @all 通知 30 分钟。</li>
+<li>超时无人认领再温柔地 <code>kill -15 pid</code>，依然存活才 <code>kill -9</code>。</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><strong>一句话</strong>：先观察 → 后沟通 → 再操作，永远不要直接干掉别人的进程。</p>
+</blockquote>
+<h2 id="环境管理速查表"><a href="#环境管理速查表" class="headerlink" title="环境管理速查表"></a>环境管理速查表</h2><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>创建环境</td>
+<td><code>mamba create -n myenv python=3.11</code></td>
+</tr>
+<tr>
+<td>激活 &#x2F; 退出</td>
+<td><code>conda activate myenv</code> &#x2F; <code>conda deactivate</code></td>
+</tr>
+<tr>
+<td>删除环境</td>
+<td><code>conda remove -n myenv --all</code></td>
+</tr>
+<tr>
+<td>列出包来源</td>
+<td><code>conda list --show-channel-urls</code></td>
+</tr>
+<tr>
+<td>导出 YAML</td>
+<td><code>conda env export &gt; env.yml</code></td>
+</tr>
+<tr>
+<td>离线备份</td>
+<td>`conda pack -n myenv -o my</td>
+</tr>
+</tbody></table>
+<h2 id="提速技巧与最佳实践"><a href="#提速技巧与最佳实践" class="headerlink" title="提速技巧与最佳实践"></a>提速技巧与最佳实践</h2><ol>
+<li><strong>mamba</strong> 并行解析依赖，速度 10× 于 conda。</li>
+<li><code>conda config --set restore_free_channel true</code> 避免「PackagesNotFoundError」。</li>
+<li>定期 <code>conda clean -a</code>，或将 <code>pkgs_dirs</code> 软链到大容量盘。</li>
+<li>GitLab CI 中使用 <code>mamba env create -f env.yml --yes</code>。</li>
+<li>若同时依赖 PyPI 包，务必先 <strong>mamba 再 pip</strong>。</li>
+</ol>
+<h2 id="常见问题-FAQ"><a href="#常见问题-FAQ" class="headerlink" title="常见问题 FAQ"></a>常见问题 FAQ</h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Driver 与 CUDA 版本不匹配</strong></td>
+<td>查看 <code>nvidia-smi</code> 顶栏显示的 CUDA 版本；Conda 环境需 ≤ 驱动支持版本。</td>
+</tr>
+<tr>
+<td><strong>ImportError: libcudart.so not found</strong></td>
+<td>环境未安装 <code>cudatoolkit</code> &#x2F; <code>cudnn</code>；或未 <code>conda activate</code>。</td>
+</tr>
+<tr>
+<td><strong>多卡训练速率不一致</strong></td>
+<td>确认 <code>NCCL_P2P_DISABLE=0</code>；检查 PCIe 绑定与 CPU NUMA 节点。</td>
+</tr>
+<tr>
+<td><strong>显存碎片化</strong></td>
+<td><code>torch.cuda.empty_cache()</code>；或在启动脚本中加入 <code>export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128</code>.</td>
+</tr>
+</tbody></table>
+<h2 id="环境备份与迁移"><a href="#环境备份与迁移" class="headerlink" title="环境备份与迁移"></a>环境备份与迁移</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导出精确锁定文件</span></span><br><span class="line">conda <span class="built_in">env</span> <span class="built_in">export</span> &gt; lock.yml</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在新服务器离线恢复</span></span><br><span class="line">mamba <span class="built_in">env</span> create -f lock.yml  <span class="comment"># 或 conda env create</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>生产部署可用 <strong>Docker + Conda</strong>：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> nvidia/cuda:<span class="number">12.1</span>.<span class="number">0</span>-runtime-ubuntu22.<span class="number">04</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get update &amp;&amp; apt-get install -y wget git &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> lock.yml /tmp/lock.yml</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> wget -q https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; bash /tmp/miniconda.sh -b -p /opt/conda &amp;&amp; /opt/conda/bin/conda init bash \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; /opt/conda/bin/conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span> \</span></span><br><span class="line"><span class="language-bash">    &amp;&amp; /opt/conda/bin/mamba <span class="built_in">env</span> create -f /tmp/lock.yml &amp;&amp; <span class="built_in">rm</span> /tmp/*</span></span><br><span class="line"><span class="keyword">ENV</span> PATH=<span class="string">&quot;/opt/conda/envs/torch2/bin:/opt/conda/bin:$PATH&quot;</span></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;python&quot;</span>]</span></span><br></pre></td></tr></table></figure></blockquote>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li>Conda 官方：<a target="_blank" rel="noopener" href="https://docs.conda.io/">https://docs.conda.io/</a></li>
+<li>mamba：<a target="_blank" rel="noopener" href="https://github.com/mamba-org/mamba">https://github.com/mamba-org/mamba</a></li>
+<li>PyTorch GPU 安装：<a target="_blank" rel="noopener" href="https://pytorch.org/get-started/locally/">https://pytorch.org/get-started/locally/</a></li>
+<li>NCCL 指南：<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/troubleshooting.html">https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/troubleshooting.html</a></li>
+<li>清华镜像站 Conda 帮助：<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/">https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/</a></li>
+</ul>
+<hr>
+<p><strong>写在最后</strong>：祝大伙儿都多发顶刊顶会，到时候请给我一个八作，谢谢谢谢谢谢谢谢谢谢谢谢😀</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/服务器操作/">服务器操作</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://rendawei.dev/2025/01/01/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%90%E8%A1%8C%E6%8C%87%E5%8D%97/" data-title="实验室服务器运行指南 | David&#39;s life" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2025/02/10/博客简易搭建指南/" title="博客简易搭建指南">
+  <strong>上一篇：</strong><br/>
+  <span>
+  博客简易搭建指南</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2025/01/01/David’s-To-Do-List/"  title="David’s To-Do List">
+ <strong>下一篇：</strong><br/> 
+ <span>David’s To-Do List
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%89%E6%8B%A9-Miniconda-%E7%9A%84%E7%90%86%E7%94%B1"><span class="toc-number">2.</span> <span class="toc-text">选择 Miniconda 的理由</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%89%8D%E7%BD%AE%EF%BC%9A%E9%A9%B1%E5%8A%A8%E4%B8%8E-CUDA"><span class="toc-number">3.</span> <span class="toc-text">系统前置：驱动与 CUDA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%B9%B6%E5%AE%89%E8%A3%85-Miniconda"><span class="toc-number">4.</span> <span class="toc-text">下载并安装 Miniconda</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A6%96%E6%AC%A1%E5%90%AF%E5%8A%A8%E4%B8%8E%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE"><span class="toc-number">5.</span> <span class="toc-text">首次启动与基础配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F-condarc"><span class="toc-number">6.</span> <span class="toc-text">配置国内镜像 .condarc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CUDA-Toolkit-cuDNN-%E5%AE%89%E8%A3%85%E6%96%B9%E6%A1%88"><span class="toc-number">7.</span> <span class="toc-text">CUDA Toolkit &amp; cuDNN 安装方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88-A%EF%BC%9A%E7%B3%BB%E7%BB%9F%E7%BA%A7-CUDA%EF%BC%88%E9%A9%B1%E5%8A%A8%E8%87%AA%E5%B8%A6%EF%BC%89"><span class="toc-number">7.1.</span> <span class="toc-text">方案 A：系统级 CUDA（驱动自带）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88-B%EF%BC%9AConda-CUDA%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="toc-number">7.2.</span> <span class="toc-text">方案 B：Conda CUDA（推荐）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%8E%AF%E5%A2%83%E7%A4%BA%E4%BE%8B"><span class="toc-number">8.</span> <span class="toc-text">创建深度学习环境示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A-GPU-%E8%B0%83%E4%BC%98%E8%A6%81%E7%82%B9"><span class="toc-number">9.</span> <span class="toc-text">多 GPU 调优要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E4%BA%BA%E5%8D%8F%E4%BD%9C%E4%B8%8E-GPU-%E4%BD%BF%E7%94%A8%E5%85%AC%E7%BA%A6"><span class="toc-number">10.</span> <span class="toc-text">多人协作与 GPU 使用公约</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%8A%E6%9C%BA%E5%89%8D%E5%85%88-%E2%80%9C%E7%9C%8B%E4%B8%80%E7%9C%BC%E2%80%9D"><span class="toc-number">10.1.</span> <span class="toc-text">1. 上机前先 “看一眼”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="toc-number">10.2.</span> <span class="toc-text">2. 进程管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%98%BE%E5%8D%A1%E7%BB%91%E5%AE%9A%E7%AD%96%E7%95%A5"><span class="toc-number">10.3.</span> <span class="toc-text">3. 显卡绑定策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E8%B5%84%E6%BA%90%E9%85%8D%E9%A2%9D%E4%B8%8E%E6%8E%92%E7%A8%8B"><span class="toc-number">10.4.</span> <span class="toc-text">4. 资源配额与排程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB"><span class="toc-number">10.5.</span> <span class="toc-text">5. 环境隔离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E7%B4%A7%E6%80%A5%E5%A4%84%E7%90%86"><span class="toc-number">10.6.</span> <span class="toc-text">6. 紧急处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E7%AE%A1%E7%90%86%E9%80%9F%E6%9F%A5%E8%A1%A8"><span class="toc-number">11.</span> <span class="toc-text">环境管理速查表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E9%80%9F%E6%8A%80%E5%B7%A7%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">12.</span> <span class="toc-text">提速技巧与最佳实践</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-FAQ"><span class="toc-number">13.</span> <span class="toc-text">常见问题 FAQ</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%A4%87%E4%BB%BD%E4%B8%8E%E8%BF%81%E7%A7%BB"><span class="toc-number">14.</span> <span class="toc-text">环境备份与迁移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">15.</span> <span class="toc-text">参考链接</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github</p>
+<div class="github-card" data-github="rendaweiSIMIT" data-theme="default"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/科研日记/" title="科研日记">科研日记<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/网页设计/" title="网页设计">网页设计<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/David’s-To-Do-List/" title="David’s To-Do List">David’s To-Do List<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/服务器操作/" title="服务器操作">服务器操作<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://www.zhihu.com/" target="_blank" title="zhihu">zhihu</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://www.douyu.com/6657" target="_blank" title="wanjiqi">wanjiqi</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://sway.cloud.microsoft/sD1RziqnHyZ92I3b" target="_blank" title="daobanyouxi">daobanyouxi</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://chat.ustc.edu.cn/" target="_blank" title="Deepseek">Deepseek</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://t.bilibili.com/" target="_blank" title="Bilibili">Bilibili</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> 我喜欢户外运动、手工、电子游戏 <br/>
+			还喜欢旅行、写博客和吃好吃的</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/rendaweiSIMIT" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:rendawei1210@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2025 
+		
+		<a href="/about" target="_blank" title="David Ren">David Ren</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
