@@ -11,15 +11,15 @@
     
 
     
-    <meta name="description" content="* CVPR2026 (2025-11-13)  截止（AOE）： 0天 00时 00分 00秒- 论文写作     - Fig.1 效果开篇图，展示别人和我们的对比     - Fig.2 继续展示效果，多展示几张，参考PointRend     - Fig.3 文章主体结构图，overview     - Fig.4 文章细节结构图     - Fig.5 推理结构图     - Fig.6">
+    <meta name="description" content="CVPR2026（2025-11-13, AOE） 0天 00时 00分 00秒  * 论文写作 * Fig.1 效果开篇图，展示别人和我们的对比     * Fig.2 继续展示效果，多展示几张，参考PointRend     * Fig.3 文章主体结构图，overview     * Fig.4 文章细节结构图     * Fig.5 推理结构图     * Fig.6 不同尺寸效果对比图">
 <meta property="og:type" content="article">
 <meta property="og:title" content="David’s To-Do List">
 <meta property="og:url" content="https://rendawei.dev/2025/01/01/David%E2%80%99s-To-Do-List/index.html">
 <meta property="og:site_name" content="David&#39;s life">
-<meta property="og:description" content="* CVPR2026 (2025-11-13)  截止（AOE）： 0天 00时 00分 00秒- 论文写作     - Fig.1 效果开篇图，展示别人和我们的对比     - Fig.2 继续展示效果，多展示几张，参考PointRend     - Fig.3 文章主体结构图，overview     - Fig.4 文章细节结构图     - Fig.5 推理结构图     - Fig.6">
+<meta property="og:description" content="CVPR2026（2025-11-13, AOE） 0天 00时 00分 00秒  * 论文写作 * Fig.1 效果开篇图，展示别人和我们的对比     * Fig.2 继续展示效果，多展示几张，参考PointRend     * Fig.3 文章主体结构图，overview     * Fig.4 文章细节结构图     * Fig.5 推理结构图     * Fig.6 不同尺寸效果对比图">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-12-31T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-10-19T16:24:20.639Z">
+<meta property="article:modified_time" content="2025-10-19T16:34:02.259Z">
 <meta property="article:author" content="David Ren">
 <meta name="twitter:card" content="summary">
 
@@ -105,104 +105,112 @@
 		
 		</div>
 		
-		<ul>
-<li>CVPR2026 (2025-11-13)<!-- AOE 倒计时（Anywhere on Earth = UTC-12） --></li>
-</ul>
-<div id="deadline-aoe" class="countdown" data-aoe="2025-11-13T23:59:59">
-  <strong>截止（AOE）：</strong>
-  <span class="cd-part"><span data-dd>0</span>天</span>
-  <span class="cd-part"><span data-hh>00</span>时</span>
-  <span class="cd-part"><span data-mm>00</span>分</span>
-  <span class="cd-part"><span data-ss>00</span>秒</span>
+		<!-- ===== AOE 倒计时：行内胶囊版 ===== -->
+<div class="cd-row">
+  <div class="cd-title">CVPR2026（2025-11-13, AOE）</div>
+  <div class="countdown-aoe" data-aoe="2025-11-13T23:59:59">
+    <span class="cd-part"><span class="cd-num" data-dd>0</span><span class="cd-unit">天</span></span>
+    <span class="cd-part"><span class="cd-num" data-hh>00</span><span class="cd-unit">时</span></span>
+    <span class="cd-part"><span class="cd-num" data-mm>00</span><span class="cd-unit">分</span></span>
+    <span class="cd-part"><span class="cd-num" data-ss>00</span><span class="cd-unit">秒</span></span>
+  </div>
 </div>
 
 <style>
-.countdown { display:inline-block; line-height:1.6; }
-.countdown .cd-part { display:inline-block; min-width:5.2em; text-align:center; }
-.countdown strong { margin-right:.5em; }
+/* ——色彩可按需改—— */
+.cd-row{--cd-accent:#2563eb; --cd-bg:rgba(37,99,235,.06);}
+.cd-row{
+  display:flex; justify-content:space-between; align-items:center; gap:1rem;
+  padding:.75rem 1rem; border:1px solid rgba(0,0,0,.06); border-radius:12px; 
+  background:var(--cd-bg); margin:1rem 0;
+}
+.cd-title{font-weight:600;}
+.countdown-aoe{display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;}
+.countdown-aoe .cd-part{
+  display:inline-flex; align-items:flex-end; gap:.25rem;
+  padding:.25rem .5rem; border-radius:.5rem; background:#fff; 
+  border:1px solid rgba(0,0,0,.06); box-shadow:0 1px 0 rgba(0,0,0,.03);
+}
+.cd-num{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-variant-numeric: tabular-nums; font-feature-settings:"tnum";
+  font-size:clamp(18px, 2.6vw, 28px); line-height:1; min-width:2ch; text-align:right;
+  color:var(--cd-accent);
+}
+.cd-unit{font-size:.85em; opacity:.75; margin-bottom:2px;}
+@media (max-width:520px){ .cd-title{flex:1 1 100%} }
 </style>
 
 <script>
 (function(){
-  function two(n){ return n<10 ? ('0'+n) : ''+n; }
+  function two(n){return n<10?('0'+n):''+n;}
+  function start(el){
+    var s=el.getAttribute('data-aoe'); // 例：2025-11-13T23:59:59（AOE本地时间）
+    var p=s.split(/[T:\-]/).map(Number);
+    // AOE(UTC-12) -> UTC：加12小时
+    var targetUTCms=Date.UTC(p[0],p[1]-1,p[2],p[3]||23,p[4]||59,p[5]||59)+12*3600*1000;
 
-  function startCountdown(el){
-    // 读取 AOE 目标时间（字符串按 AOE 本地时间理解：YYYY-MM-DDTHH:mm:ss）
-    var s = el.getAttribute('data-aoe'); // 例：2025-11-13T23:59:59
-    var p = s.split(/[T:\-]/).map(Number);
-    // 把 AOE(UTC-12) 转成 UTC 时间戳：UTC = AOE + 12 小时
-    var targetUTCms = Date.UTC(p[0], (p[1]-1), p[2], p[3]||23, p[4]||59, p[5]||59) + 12*3600*1000;
-
-    var dd = el.querySelector('[data-dd]'),
-        hh = el.querySelector('[data-hh]'),
-        mm = el.querySelector('[data-mm]'),
-        ss = el.querySelector('[data-ss]');
+    var dd=el.querySelector('[data-dd]'),
+        hh=el.querySelector('[data-hh]'),
+        mm=el.querySelector('[data-mm]'),
+        ss=el.querySelector('[data-ss]');
 
     function tick(){
-      var now = Date.now();
-      var diff = targetUTCms - now;
-      if (diff <= 0){
-        dd.textContent='0'; hh.textContent='00'; mm.textContent='00'; ss.textContent='00';
-        clearInterval(timer); return;
-      }
-      var sec = Math.floor(diff/1000);
-      var d = Math.floor(sec/86400); sec -= d*86400;
-      var h = Math.floor(sec/3600); sec -= h*3600;
-      var m = Math.floor(sec/60);   sec -= m*60;
-      dd.textContent = d;
-      hh.textContent = two(h);
-      mm.textContent = two(m);
-      ss.textContent = two(sec);
+      var diff=targetUTCms-Date.now();
+      if(diff<=0){dd.textContent='0';hh.textContent='00';mm.textContent='00';ss.textContent='00';clearInterval(t);return;}
+      var sec=Math.floor(diff/1000);
+      var d=Math.floor(sec/86400); sec-=d*86400;
+      var h=Math.floor(sec/3600);  sec-=h*3600;
+      var m=Math.floor(sec/60);    sec-=m*60;
+      dd.textContent=d; hh.textContent=two(h); mm.textContent=two(m); ss.textContent=two(sec);
     }
-    tick();
-    var timer = setInterval(tick, 1000);
+    tick(); var t=setInterval(tick,1000);
   }
-
-  function init(){
-    var el = document.getElementById('deadline-aoe');
-    if (el) startCountdown(el);
-  }
-
-  // 普通加载
+  function init(){ document.querySelectorAll('.countdown-aoe').forEach(start); }
   document.addEventListener('DOMContentLoaded', init);
-  // 若主题启用了 PJAX，尝试在切页后重新初始化（Jacman 有站点可能开了）
   document.addEventListener('pjax:end', init);
   document.addEventListener('pjax:success', init);
 })();
 </script>
 
-<pre><code>- 论文写作
-    - Fig.1 效果开篇图，展示别人和我们的对比
-    - Fig.2 继续展示效果，多展示几张，参考PointRend
-    - Fig.3 文章主体结构图，overview
-    - Fig.4 文章细节结构图
-    - Fig.5 推理结构图
-    - Fig.6 不同尺寸效果对比图
-    - FIg.7 效果对比大图
-    - Introduction文字修改
-    - Related Work撰写
-    - Method撰写
-    - Experiments撰写
-    - Conclusion撰写
-    - Table.1 大表，几种网络加上我的LIGER结构，Params(M) MACs(T) Latency(ms) MeanIoU
-    - Table.2 小表，在四个数据集上的具体表现，比原结构提升多少
-    - Table.3 小表，和同类方法进行比较，Latency MeanIoU
-    - Table.4 小表，和同类方法比较，Latency MeanIoU
-    - Table.5 小表，Ablation参数选择影响性能
-    - Table.6 小表，融合器选择
-    - Table.7 小表，点云选择
-    - Table.8 小表，分类型提升
-    - 添加参考文献
-    - 论文排版
-- 实验
-    - 实验出图
-    - 实验跑结果
-    - 算FLOPs&amp;Activations
-- Supplementary Material (2025-11-20)
-- Compute Report (2025-11-13)
-- Weights And Biases Logs (2025-11-13)
-- 最后确认
-</code></pre>
+
+<ul>
+<li>论文写作<ul>
+<li>Fig.1 效果开篇图，展示别人和我们的对比</li>
+<li>Fig.2 继续展示效果，多展示几张，参考PointRend</li>
+<li>Fig.3 文章主体结构图，overview</li>
+<li>Fig.4 文章细节结构图</li>
+<li>Fig.5 推理结构图</li>
+<li>Fig.6 不同尺寸效果对比图</li>
+<li>FIg.7 效果对比大图</li>
+<li>Introduction文字修改</li>
+<li>Related Work撰写</li>
+<li>Method撰写</li>
+<li>Experiments撰写</li>
+<li>Conclusion撰写</li>
+<li>Table.1 大表，几种网络加上我的LIGER结构，Params(M) MACs(T) Latency(ms) MeanIoU</li>
+<li>Table.2 小表，在四个数据集上的具体表现，比原结构提升多少</li>
+<li>Table.3 小表，和同类方法进行比较，Latency MeanIoU</li>
+<li>Table.4 小表，和同类方法比较，Latency MeanIoU</li>
+<li>Table.5 小表，Ablation参数选择影响性能</li>
+<li>Table.6 小表，融合器选择</li>
+<li>Table.7 小表，点云选择</li>
+<li>Table.8 小表，分类型提升</li>
+<li>添加参考文献</li>
+<li>论文排版</li>
+</ul>
+</li>
+<li>实验<ul>
+<li>实验出图</li>
+<li>实验跑结果</li>
+<li>算FLOPs&amp;Activations</li>
+</ul>
+</li>
+<li>Supplementary Material (2025-11-20)</li>
+<li>Compute Report (2025-11-13)</li>
+<li>Weights And Biases Logs (2025-11-13)</li>
+<li>最后确认</li>
+</ul>
   
 	</div>
 		<footer class="article-footer clearfix">
