@@ -83,27 +83,30 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2025/08/25/2025-08-25-微微有些疲惫的一天/" title="2025/08/25 微微有些疲惫的一天" itemprop="url">2025/08/25 微微有些疲惫的一天</a>
+      <a href="/2025/02/10/博客简易搭建指南/" title="博客简易搭建指南" itemprop="url">博客简易搭建指南</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
 		
   <p class="article-time">
-    <time datetime="2025-08-25T13:55:52.000Z" itemprop="datePublished"> 发表于 2025-08-25</time>
+    <time datetime="2025-02-10T08:19:36.000Z" itemprop="datePublished"> 发表于 2025-02-10</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        今天的效率微微有点低，因为是真的很累，不过还是做了点东西的，上午去把图和表格放进去了，下午去乱七八糟修改了一会儿，把表格bug调了调，晚上杨博请吃饭了，然后出来以后和彦彦散步，我去洗澡，然后在工位聊了会儿天，感觉很不错的一天，很好。
+        今年过年回家，感觉格外地忙。跑东跑西的吃饭，还有很多小事儿，加上放假时间也短，搞科研应该是行不通了。趁这个时间搞了个个人网站出来，以后就有地方可以写博客了。大概是年初三开始研究，初五初六做完了，一共耗时6个小时，这里把具体的过程写在这里，给有需要的同学参考。
 
-明天上来就去弄表格，然后接着弄文章，目前还不想弄参考文献和related work，那就不着急，先弄method，就这样，明天加油。
+选域名
+说到做网页，尤其是做个人网页，第一件事肯定是选域名，我是在GoDaddy上买的域名，也可以在Namecheap之类的域名网站买，尽量找大一些的网站。
+
+我在检索的时候发现没有rendawei.com了，在rendawei1210.com、rendawei.me和rendawei.dev这三个域名中纠结了蛮久的，最后选了最便宜的.
         
         
         <p class="article-more-link">
           
-            <a href="/2025/08/25/2025-08-25-%E5%BE%AE%E5%BE%AE%E6%9C%89%E4%BA%9B%E7%96%B2%E6%83%AB%E7%9A%84%E4%B8%80%E5%A4%A9/#more">Read More</a>
+            <a href="/2025/02/10/%E5%8D%9A%E5%AE%A2%E7%AE%80%E6%98%93%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/#more">Read More</a>
           
        </p>
     </div>
@@ -113,7 +116,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/日记/">日记</a>
+  <span></span> <a href="/tags/网站技术/">网站技术</a>
   </div>
 
 </div>
@@ -141,32 +144,39 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2025/08/24/2025-08-24-we-were-meant-to-be/" title="2025/08/24 we were meant to be" itemprop="url">2025/08/24 we were meant to be</a>
+      <a href="/2025/01/01/实验室服务器运行指南/" title="实验室服务器运行指南" itemprop="url">实验室服务器运行指南</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
 		
   <p class="article-time">
-    <time datetime="2025-08-24T15:06:42.000Z" itemprop="datePublished"> 发表于 2025-08-24</time>
+    <time datetime="2024-12-31T16:00:01.000Z" itemprop="datePublished"> 发表于 2025-01-01</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        题主成功追到了喜欢的女生！非常开心的断更了一段时间。
+        面向 Ubuntu 20.04 / 22.04 + NVIDIA 2080 Ti × 8 服务器，从显卡驱动到 Conda 环境及 多用户协同规范 一篇搞定。
 
-今天收到了彦彦送的礼物，“我们是命中注定”，好喜欢。
-
-
-今天开始重新开始更新吧，因为最近一直太开心了，有点耽误了科研进度了，得加加油了。
-
-目前考虑wacv和iclr，明早先看看iclr的方向，有没有符合的东西，然后添加好图片，添加表格，估计这个时候就差不多了，接着修改我的method，一句一句来，下午的时候接着修改method，基本一天就是这点活，明天加油呀。
+目录
+ 1.  选择 Miniconda 的理由
+ 2.  系统前置：驱动与 CUDA
+ 3.  下载并安装 Miniconda
+ 4.  首次启动与基础配置
+ 5.  配置国内镜像.condarc
+ 6.  CUDA Toolkit & cuDNN 安装方案
+ 7.  创建深度学习环境示例
+ 8.  多 GPU 调优要点
+ 9.  多人协作与 GPU 使用公约
+ 10. 环境管理速查表
+ 11. 提速技巧与最佳实践
+ 12. 常见问
         
         
         <p class="article-more-link">
           
-            <a href="/2025/08/24/2025-08-24-we-were-meant-to-be/#more">Read More</a>
+            <a href="/2025/01/01/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%90%E8%A1%8C%E6%8C%87%E5%8D%97/#more">Read More</a>
           
        </p>
     </div>
@@ -176,7 +186,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/日记/">日记</a>
+  <span></span> <a href="/tags/服务器操作/">服务器操作</a>
   </div>
 
 </div>
@@ -198,523 +208,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2025/07/02/2025-07-02-周二周二啦/" title="2025/07/02 周二周二啦" itemprop="url">2025/07/02 周二周二啦</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
-		
-  <p class="article-time">
-    <time datetime="2025-07-02T15:52:21.000Z" itemprop="datePublished"> 发表于 2025-07-02</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        两天没写日记啦，这两天都挺忙的，昨天周一，也是七月一号，上午陪胖达去拍了照片，化妆花了一个小时，结果也就和正常的照片差不多，真是糟糕的技术啊，不过拍出来还挺好看的。
-
-
-下午回来给我有点累着了，睡了好大一觉才补回来，下午和晚上好像就是老老实实学习了，忘了干啥来着，昨晚好像是也没干啥，哦我想起来了，胖达同学来上海了，然后他去和同学吃晚饭去了，我加了会儿班就回去了。
-
-然后今天我一整天都在好好学习，整个一天都在忙论文的事儿，兜兜转转的，中午和师姑一起吃了个四川麻辣烫，还是一如既往的好吃，下午学习，师姑没有来，晚上和胖达吃了一个很难吃的鱼香肉丝饭，真的巨难吃，无语了。
-吃完饭我俩打了一小时的台球，技
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2025/07/02/2025-07-02-%E5%91%A8%E4%BA%8C%E5%91%A8%E4%BA%8C%E5%95%A6/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/日记/">日记</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2025/06/30/2025-06-30-月末最后一天/" title="2025/06/30 月末最后一天" itemprop="url">2025/06/30 月末最后一天</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
-		
-  <p class="article-time">
-    <time datetime="2025-06-30T15:50:40.000Z" itemprop="datePublished"> 发表于 2025-06-30</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        今天可真是有点累啊，上午下午和晚上都强度拉满狂写论文，今天算是把第一章彻底完事了，明天没什么事，加加班，把整个文章收尾结束。中午的时候，我按照习惯坐在了胖达的斜对过吃饭，没想到胖达主动过来了坐在我对面，其实我不应该想太多暗示的事情，但是我还是会想很多，也许胖达也是对我有一些感觉的。算了算了不要想太多，以后注意这个细节就好啦。
-
-今晚上下班以后很好笑，和彪哥和彪哥准女友吃了个饭，彪哥准女友闷闷的，也不咋说话，倒是有点像彪哥这一点。
-
-晚上吃了一会儿瓜以后，本来打算健身去，但健身区人太多了，还是去的外面溜达，很搞笑，我和胖达进去了人家硅所，但是找不到人家的操场在哪里，麻烦了人家主席带路找到了操场，
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2025/06/30/2025-06-30-%E6%9C%88%E6%9C%AB%E6%9C%80%E5%90%8E%E4%B8%80%E5%A4%A9/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/日记/">日记</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2025/06/29/2025-06-29-忙里偷闲之四日小假期/" title="2025/06/29 忙里偷闲之四日小假期" itemprop="url">2025/06/29 忙里偷闲之四日小假期</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
-		
-  <p class="article-time">
-    <time datetime="2025-06-29T15:05:12.000Z" itemprop="datePublished"> 发表于 2025-06-29</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        兜兜转转到了月末啦，这周基本上没有学习，本来是约了周四学校的活动去特斯拉宣讲的，顺便开车去上海天文馆，没想到周五直接一请假，变成了四日小长假，非常爽啊，非常爽，简单写个流水账纪念一下这个旅行吧。
-
-在周三晚上就有点按耐不住了，我没记错的话好像是打台球了？我忘了是啥时候去打的台球，反正是打的有点点好玩。
-
-周四上午正式出发，和胖达一起，首先第一站是天文馆，本来我以为天文馆是可以逛一上午，没想到啊没想到，天文馆是真的没啥玩意，感觉绝大多数的东西都看过了，真的有点不行啊，整体是分成三个部分，做的还行，就是感觉成年人没必要去。纪念馆金币还挺不错的，不过感觉花钱找黄牛买票有点不值得。
-
-
-
-
-
-
-看完了
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2025/06/29/2025-06-29-%E5%BF%99%E9%87%8C%E5%81%B7%E9%97%B2%E4%B9%8B%E5%9B%9B%E6%97%A5%E5%B0%8F%E5%81%87%E6%9C%9F/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/日记/">日记</a><a href="/tags/旅行/">旅行</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2025/06/22/2025-06-22-一转眼三天没写日记啦/" title="2025/06/22 一转眼三天没写日记啦" itemprop="url">2025/06/22 一转眼三天没写日记啦</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
-		
-  <p class="article-time">
-    <time datetime="2025-06-22T14:53:01.000Z" itemprop="datePublished"> 发表于 2025-06-22</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        哇，一转眼三天没写日记了，周五周六周日三天眨眼就过去了，刷的一下。
-
-周五上午，我都有点不记得我上午干啥了，好像写了第四章的接下来两部分吧，但我记得下午的时候，给我无聊坏了，因为晚上约了吃牛new，下午的时候心都飞了，学不进去习，就约上师姑和胖达去打了台球，还挺好玩，我们三个菜鸡约着打，结果是胖达最厉害，很强！
-
-周五晚上的时候，我们从台球厅回来，直接去了所里打卡，胖达说好累，完全不想去坐地铁，我们就一起开车去的南翔，感觉还不错，牛new还挺好吃的，然后吃完感觉精疲力竭的，换了个电回来就直接睡觉了。
-
-接下来周六去了淀山湖骑车，所里组织的活动，景色还不错，就是太热了，小骑了一圈，准备的饭也挺好
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2025/06/22/2025-06-22-%E4%B8%80%E8%BD%AC%E7%9C%BC%E4%B8%89%E5%A4%A9%E6%B2%A1%E5%86%99%E6%97%A5%E8%AE%B0%E5%95%A6/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/日记/">日记</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2025/06/19/2025-06-19-周四小郊游/" title="2025/06/19 周四小郊游" itemprop="url">2025/06/19 周四小郊游</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
-		
-  <p class="article-time">
-    <time datetime="2025-06-19T15:47:07.000Z" itemprop="datePublished"> 发表于 2025-06-19</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        今天玩爽啦，早上很晚才到实验室，然后中午吃的肯德基，下午和胖达干去长宁了，长宁还下雨，开车去的，给胖达送了材料，然后我俩去龙之梦了，还不错，去了盒马买了个榴莲，然后买了早饭，然后吃了个椰子冻，我俩天真的以为可以逃过晚高峰的制裁，结果还是赶上了。
-
-
-
-晚上回到所里还和胖达去健身了，练了挺久的，结果很难直说，只能说是未来的一个星期内都失去了我的教练。
-
-晚上回来以后就开打和平精英，打的好开心，好玩。玩完之后和姐夫一起打了炉石，难得的又吃了一次鸡，阵容还挺强力的。
-
-
-
-最近有一点懈怠，说写第四章，磨磨唧唧好久没写完，明天周末得赶紧干完了，明天加油，明天还说要吃自助，干！
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2025/06/19/2025-06-19-%E5%91%A8%E5%9B%9B%E5%B0%8F%E9%83%8A%E6%B8%B8/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/日记/">日记</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2025/06/17/2025-06-17-开始减肥/" title="2025/06/17 开始减肥" itemprop="url">2025/06/17 开始减肥</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
-		
-  <p class="article-time">
-    <time datetime="2025-06-17T15:02:59.000Z" itemprop="datePublished"> 发表于 2025-06-17</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        今天一天好像也没干什么，白天上午去修改了第四章的结构，中午食堂，下午随便干了点杂货就晚上了，晚上还是食堂，今天都一天没出所。
-
-晚上还是照例和胖达健身，师姑又去南翔了，健身完事以后拍到了绝美晚霞，超美。
-
-
-
-
-今日体重224.4，总之决定减肥，那就好好落实，明天工作和生活都要加油呀！
-
-我固执，不想做你片刻的恋人，今天看到这句话，好美的意境。
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2025/06/17/2025-06-17-%E5%BC%80%E5%A7%8B%E5%87%8F%E8%82%A5/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/日记/">日记</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2025/06/16/2025-06-16-小小周一/" title="2025/06/16 小小周一" itemprop="url">2025/06/16 小小周一</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
-		
-  <p class="article-time">
-    <time datetime="2025-06-16T14:02:43.000Z" itemprop="datePublished"> 发表于 2025-06-16</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        今天是周一，新的一周，昨天晚上失眠的厉害哦，好像是到两点多才睡着，很离谱。
-
-今早上起来以后吃了个食堂的早饭，然后去工位，一上午，一边摸鱼一边把第三章写完了，然后没开第四章，没啥想法，老老实实明天开吧，第四章相对来说比较简单，估计一到两天就能结束。
-
-今天晚上一起吃的达美乐，大姐的车在我这里，我顺便给换了个电，这样也方便出去溜弯，达美乐吃的有点点糟糕，感觉肠胃吃的不太舒服，不过也就是这样吧。
-
-
-
-今天晚上找胖达一起考虑凑单刷个鞋，然后买了一个洞洞鞋，挺好，有鞋子穿了。
-
-那就这样，明天做第四章，希望提高工作效率，少玩手机，明天加油!
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2025/06/16/2025-06-16-%E5%B0%8F%E5%B0%8F%E5%91%A8%E4%B8%80/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/日记/">日记</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2025/06/14/2025-06-14-休息休息/" title="2025/06/14 休息休息" itemprop="url">2025/06/14 休息休息</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
-		
-  <p class="article-time">
-    <time datetime="2025-06-14T14:56:37.000Z" itemprop="datePublished"> 发表于 2025-06-14</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        连着三天都没有时间写写日记记录生活，再不写就要把事情都忘光了。
-
-周四的时候吧，收到了实验室谢师宴的照片，挺好的，（得减减肥了，有点胖）我感觉给我拍的还可以吧。
-
-
-
-
-然后那天干什么来着，好像是上午直接睡了一上午，起来以后有点腰疼，然后就回工位，摸摸鱼一天就过去了，应该是这样的。
-
-然后周五非常开心，周五老师们全都去参加工会活动了，实验室是学生的天下，本来前一天想约师姑去打麻将的，但是可恶啊，师姑鸽了我们，在南翔睡大觉。不过早上八点多的时候，约到了胖达一起去看早班电影！！开心，第一次和胖达一起看电影，超搞笑，看的是驯龙高手，好像和动画版也没什么区别，但是我们俩基本早上去看电影的时候整个电影院
-        
-        
-        <p class="article-more-link">
-          
-            <a href="/2025/06/14/2025-06-14-%E4%BC%91%E6%81%AF%E4%BC%91%E6%81%AF/#more">Read More</a>
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/日记/">日记</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-
-  <nav id="page-nav" class="clearfix">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next</a>
-  </nav>
 
 </div>
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
@@ -738,14 +231,6 @@
 <div class="tagslist">
 	<p class="asidetitle">Tags</p>
 		<ul class="clearfix">
-		
-			
-				<li><a href="/tags/日记/" title="日记">日记<sup>32</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/旅行/" title="旅行">旅行<sup>1</sup></a></li>
-			
 		
 			
 				<li><a href="/tags/网站技术/" title="网站技术">网站技术<sup>1</sup></a></li>
