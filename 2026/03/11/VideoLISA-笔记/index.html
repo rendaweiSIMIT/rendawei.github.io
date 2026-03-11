@@ -1,0 +1,658 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>VideoLISA 笔记 | David&#39;s life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="David Ren">
+    
+
+    
+    <meta name="description" content="VideoLISA 总结 论文核心问题 文章要解决的是：给定一个视频和一段自然语言指令，输出该目标在整段视频中所有帧的像素级分割结果。  这里的语言指令不是简单类别词，而是可能包含：   * 隐式意图  * 世界知识  * 时序关系  * 动作与行为描述  所以这个任务不只是普通的 RVOS &#x2F; VOS，而是更难的 language-instructed reasoning segmentatio">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VideoLISA 笔记">
+<meta property="og:url" content="https://rendawei.dev/2026/03/11/VideoLISA-%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="David&#39;s life">
+<meta property="og:description" content="VideoLISA 总结 论文核心问题 文章要解决的是：给定一个视频和一段自然语言指令，输出该目标在整段视频中所有帧的像素级分割结果。  这里的语言指令不是简单类别词，而是可能包含：   * 隐式意图  * 世界知识  * 时序关系  * 动作与行为描述  所以这个任务不只是普通的 RVOS &#x2F; VOS，而是更难的 language-instructed reasoning segmentatio">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://rendawei.dev/images/videolisafig1.jpg">
+<meta property="article:published_time" content="2026-03-11T08:31:48.000Z">
+<meta property="article:modified_time" content="2026-03-11T08:37:50.165Z">
+<meta property="article:author" content="David Ren">
+<meta property="article:tag" content="读论文">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://rendawei.dev/images/videolisafig1.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="David&#39;s life" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/logo.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="David&#39;s life" title="David&#39;s life"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="David&#39;s life">David&#39;s life</a></h1>
+				<h2 class="blog-motto">欢迎来到这个博客，希望你能找到一些有用的信息！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:rendawei.dev">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2026/03/11/VideoLISA-笔记/" title="VideoLISA 笔记" itemprop="url">VideoLISA 笔记</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
+		
+  <p class="article-time">
+    <time datetime="2026-03-11T08:31:48.000Z" itemprop="datePublished"> 发表于 2026-03-11</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#VideoLISA-%E6%80%BB%E7%BB%93"><span class="toc-number">1.</span> <span class="toc-text">VideoLISA 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="toc-number">1.1.</span> <span class="toc-text">论文核心问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%B0%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.</span> <span class="toc-text">现有方法的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E5%83%8F%E6%8E%A8%E7%90%86%E5%88%86%E5%89%B2%E6%96%B9%E6%B3%95%EF%BC%88%E5%A6%82-LISA%EF%BC%89%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.1.</span> <span class="toc-text">图像推理分割方法（如 LISA）的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%A0%E7%BB%9F%E8%A7%86%E9%A2%91%E5%88%86%E5%89%B2%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.2.</span> <span class="toc-text">传统视频分割方法的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="toc-number">1.3.</span> <span class="toc-text">文章的核心思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-number">1.4.</span> <span class="toc-text">整体结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%88%9B%E6%96%B0-1%EF%BC%9ASparse-Dense-Sampling"><span class="toc-number">1.5.</span> <span class="toc-text">关键创新 1：Sparse Dense Sampling</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.5.1.</span> <span class="toc-text">要解决的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-number">1.5.2.</span> <span class="toc-text">解决办法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8"><span class="toc-number">1.5.3.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E8%B4%A8%E7%90%86%E8%A7%A3"><span class="toc-number">1.5.4.</span> <span class="toc-text">本质理解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%88%9B%E6%96%B0-2%EF%BC%9AOne-Token-Seg-All"><span class="toc-number">1.6.</span> <span class="toc-text">关键创新 2：One-Token-Seg-All</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98-1"><span class="toc-number">1.6.1.</span> <span class="toc-text">要解决的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95-1"><span class="toc-number">1.6.2.</span> <span class="toc-text">解决办法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E6%A0%B7%E8%83%BD%E8%A1%8C"><span class="toc-number">1.6.3.</span> <span class="toc-text">为什么这样能行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%89%8D%E6%8F%90"><span class="toc-number">1.6.4.</span> <span class="toc-text">关键前提</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%96%B9%E5%BC%8F"><span class="toc-number">1.7.</span> <span class="toc-text">训练方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E6%96%B9%E5%BC%8F"><span class="toc-number">1.8.</span> <span class="toc-text">推理方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E6%8F%90%E5%87%BA%E7%9A%84-Benchmark"><span class="toc-number">1.9.</span> <span class="toc-text">文章提出的 Benchmark</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E8%AE%BA"><span class="toc-number">1.10.</span> <span class="toc-text">实验结论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="toc-number">1.10.1.</span> <span class="toc-text">主要结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E6%83%B3%E8%AF%81%E6%98%8E%E7%9A%84%E7%82%B9"><span class="toc-number">1.10.2.</span> <span class="toc-text">文章想证明的点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E7%9A%84%E6%9C%AC%E8%B4%A8%E8%B4%A1%E7%8C%AE"><span class="toc-number">1.11.</span> <span class="toc-text">这篇文章的本质贡献</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%80%E9%99%90%E6%80%A7"><span class="toc-number">1.12.</span> <span class="toc-text">局限性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%AF%84%E4%BB%B7"><span class="toc-number">1.13.</span> <span class="toc-text">一句话评价</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TODO"><span class="toc-number">1.14.</span> <span class="toc-text">TODO</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="VideoLISA-总结"><a href="#VideoLISA-总结" class="headerlink" title="VideoLISA 总结"></a>VideoLISA 总结</h1><h2 id="论文核心问题"><a href="#论文核心问题" class="headerlink" title="论文核心问题"></a>论文核心问题</h2><p>文章要解决的是：<strong>给定一个视频和一段自然语言指令，输出该目标在整段视频中所有帧的像素级分割结果</strong>。</p>
+<p>这里的语言指令不是简单类别词，而是可能包含：</p>
+<ul>
+<li>隐式意图</li>
+<li>世界知识</li>
+<li>时序关系</li>
+<li>动作与行为描述</li>
+</ul>
+<p>所以这个任务不只是普通的 <strong>RVOS &#x2F; VOS</strong>，而是更难的 <strong>language-instructed reasoning segmentation in videos</strong>。</p>
+<hr>
+<h2 id="现有方法的问题"><a href="#现有方法的问题" class="headerlink" title="现有方法的问题"></a>现有方法的问题</h2><h3 id="图像推理分割方法（如-LISA）的问题"><a href="#图像推理分割方法（如-LISA）的问题" class="headerlink" title="图像推理分割方法（如 LISA）的问题"></a>图像推理分割方法（如 LISA）的问题</h3><p>它们在图像上可以做“语言推理 + 分割”，但直接迁移到视频会遇到两个核心困难：</p>
+<ol>
+<li><p><strong>视频多了时间维度</strong></p>
+<ul>
+<li>需要理解目标在时间上的运动和变化</li>
+<li>需要跨帧保持一致的分割结果</li>
+</ul>
+</li>
+<li><p><strong>单帧 prompt 不适合视频</strong></p>
+<ul>
+<li>只看一帧，缺少时序信息</li>
+<li>容易在后续帧中漂移到别的目标上</li>
+</ul>
+</li>
+</ol>
+<h3 id="传统视频分割方法的问题"><a href="#传统视频分割方法的问题" class="headerlink" title="传统视频分割方法的问题"></a>传统视频分割方法的问题</h3><p>传统 RVOS&#x2F;VOS 方法虽然能做分割和跟踪，但通常：</p>
+<ul>
+<li>对复杂语言理解能力弱</li>
+<li>缺少推理能力</li>
+<li>不擅长处理需要世界知识或多步理解的 query</li>
+</ul>
+<hr>
+<p><img src="/images/videolisafig1.jpg" alt="Figure1"></p>
+<h2 id="文章的核心思路"><a href="#文章的核心思路" class="headerlink" title="文章的核心思路"></a>文章的核心思路</h2><p>作者想把三件事统一起来：</p>
+<ul>
+<li><strong>语言推理</strong></li>
+<li><strong>视频时序理解</strong></li>
+<li><strong>像素级分割与跟踪</strong></li>
+</ul>
+<p>整体思路是：</p>
+<ol>
+<li>用 <strong>LLM</strong> 负责理解文本和视频语义</li>
+<li>用 <strong>SAM</strong> 负责输出分割 mask</li>
+<li>设计适合视频的时序建模和跨帧一致性机制</li>
+</ol>
+<hr>
+<h2 id="整体结构"><a href="#整体结构" class="headerlink" title="整体结构"></a>整体结构</h2><p>模型由四部分组成：</p>
+<ul>
+<li><strong>Visual Tokenizer</strong></li>
+<li><strong>LLM</strong></li>
+<li><strong>Vision Encoder</strong></li>
+<li><strong>Promptable Mask Decoder（来自 SAM）</strong></li>
+</ul>
+<p>大致流程是：</p>
+<ol>
+<li>输入视频和文本</li>
+<li>采样视频帧并编码成视觉 token</li>
+<li>与文本 token 一起送入 LLM</li>
+<li>让 LLM 产生一个特殊 token：<code>&lt;TRK&gt;</code></li>
+<li>取出 <code>&lt;TRK&gt;</code> 的最后层表示，映射成 <strong>prompt embedding</strong></li>
+<li>将这个 prompt embedding 和逐帧视觉特征送入 SAM 的 mask decoder</li>
+<li>输出整段视频的分割结果</li>
+</ol>
+<hr>
+<h2 id="关键创新-1：Sparse-Dense-Sampling"><a href="#关键创新-1：Sparse-Dense-Sampling" class="headerlink" title="关键创新 1：Sparse Dense Sampling"></a>关键创新 1：Sparse Dense Sampling</h2><h3 id="要解决的问题"><a href="#要解决的问题" class="headerlink" title="要解决的问题"></a>要解决的问题</h3><p>视频帧很多，如果每一帧都保留完整视觉 token，LLM 计算量太大。</p>
+<p>但如果过度压缩，又会丢掉分割需要的细节。</p>
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><p>作者提出 <strong>Sparse Dense Sampling</strong>：</p>
+<ul>
+<li>从视频中采样一批 <strong>sparse frames</strong></li>
+<li>再从中选少量 <strong>dense frames</strong></li>
+<li><strong>dense frames</strong> 保留完整分辨率特征</li>
+<li><strong>sparse frames</strong> 只保留低分辨率特征（甚至每帧一个 token）</li>
+</ul>
+<h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>这样就同时保留了：</p>
+<ul>
+<li><strong>时间上下文</strong>：靠 sparse frames</li>
+<li><strong>空间细节</strong>：靠 dense frames</li>
+</ul>
+<h3 id="本质理解"><a href="#本质理解" class="headerlink" title="本质理解"></a>本质理解</h3><p>这是一个“<strong>少量关键帧保细节，其余帧保时序信息</strong>”的设计。</p>
+<hr>
+<h2 id="关键创新-2：One-Token-Seg-All"><a href="#关键创新-2：One-Token-Seg-All" class="headerlink" title="关键创新 2：One-Token-Seg-All"></a>关键创新 2：One-Token-Seg-All</h2><h3 id="要解决的问题-1"><a href="#要解决的问题-1" class="headerlink" title="要解决的问题"></a>要解决的问题</h3><p>视频分割不仅要分出目标，还要在整段视频里持续跟住同一个目标。</p>
+<p>如果每一帧都单独处理，跨帧一致性很难保证。</p>
+<h3 id="解决办法-1"><a href="#解决办法-1" class="headerlink" title="解决办法"></a>解决办法</h3><p>作者设计了一个特殊 token：<code>&lt;TRK&gt;</code>。</p>
+<p>做法是：</p>
+<ul>
+<li>让 LLM 根据 <strong>文本 + 视频</strong> 生成 <code>&lt;TRK&gt;</code> 的语义表示</li>
+<li>把 <code>&lt;TRK&gt;</code> 最后一层 hidden embedding 作为 <strong>prompt embedding</strong></li>
+<li>用这一个 prompt embedding 去指导所有帧的 mask 解码</li>
+</ul>
+<p>也就是：</p>
+<blockquote>
+<p><strong>一个 token，分割整段视频</strong></p>
+</blockquote>
+<h3 id="为什么这样能行"><a href="#为什么这样能行" class="headerlink" title="为什么这样能行"></a>为什么这样能行</h3><p>作者的直觉是：</p>
+<ul>
+<li>在 SAM 里，decoder 本来就是“视觉特征 + prompt embedding → mask”</li>
+<li>如果这个 prompt embedding 足够语义化、足够稳定</li>
+<li>那它不仅可以在一张图里找目标，也可以在多帧里持续找同一个目标</li>
+</ul>
+<h3 id="关键前提"><a href="#关键前提" class="headerlink" title="关键前提"></a>关键前提</h3><p>作者认为要让这个想法成立，必须满足两点：</p>
+<ol>
+<li><p><strong>模型要真的看过视频</strong></p>
+<ul>
+<li>也就是输入中有时序信息，不能只看一帧</li>
+</ul>
+</li>
+<li><p><strong>训练时就要让 <code>&lt;TRK&gt;</code> 同时负责多帧</strong></p>
+<ul>
+<li>这样它才会学到跨帧通用的语义，而不是只记某一帧的位置</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="训练方式"><a href="#训练方式" class="headerlink" title="训练方式"></a>训练方式</h2><p>训练数据分两类：</p>
+<ul>
+<li>图像分割数据</li>
+<li>视频分割数据</li>
+</ul>
+<p>训练目标包括：</p>
+<ul>
+<li><p><strong>文本生成损失</strong></p>
+</li>
+<li><p><strong>分割损失</strong></p>
+<ul>
+<li>BCE</li>
+<li>DICE</li>
+</ul>
+</li>
+</ul>
+<p>其中视频训练时，会在采样得到的多个 dense frames 上同时计算分割损失。</p>
+<hr>
+<h2 id="推理方式"><a href="#推理方式" class="headerlink" title="推理方式"></a>推理方式</h2><p>推理时：</p>
+<ol>
+<li>先对视频做 sparse&#x2F;dense 采样</li>
+<li>用 LLM 得到一个 <code>&lt;TRK&gt;</code></li>
+<li>把同一个 <code>&lt;TRK&gt;</code> prompt embedding 用到所有帧</li>
+<li>逐帧解码 mask</li>
+</ol>
+<p>此外还可以做一个可选的后处理：</p>
+<ul>
+<li>用 <strong>XMem++</strong> 对 mask 做传播和优化，提高非关键帧的质量</li>
+</ul>
+<hr>
+<h2 id="文章提出的-Benchmark"><a href="#文章提出的-Benchmark" class="headerlink" title="文章提出的 Benchmark"></a>文章提出的 Benchmark</h2><p>作者构建了一个新的基准：<strong>ReasonVOS</strong></p>
+<p>它主要评估三类能力：</p>
+<ul>
+<li>复杂推理</li>
+<li>时序理解</li>
+<li>分割的时间一致性</li>
+</ul>
+<p>这是为了补现有 benchmark 的空白：以前的数据集更多考察“指代 + 分割”，但对“推理”覆盖不够。</p>
+<hr>
+<h2 id="实验结论"><a href="#实验结论" class="headerlink" title="实验结论"></a>实验结论</h2><h3 id="主要结果"><a href="#主要结果" class="headerlink" title="主要结果"></a>主要结果</h3><p>VideoLISA 在多个视频任务上表现很好，包括：</p>
+<ul>
+<li>Ref-YouTube-VOS</li>
+<li>Ref-DAVIS-17</li>
+<li>MeViS</li>
+<li>ReasonVOS</li>
+</ul>
+<p>而且在图像推理分割任务上也表现很强。</p>
+<h3 id="文章想证明的点"><a href="#文章想证明的点" class="headerlink" title="文章想证明的点"></a>文章想证明的点</h3><p>作者主要证明了三件事：</p>
+<ol>
+<li><strong>LLM 的推理能力可以真正帮助视频分割</strong></li>
+<li><strong>Sparse Dense Sampling 比常见的视频 token 压缩策略更适合 VOS</strong></li>
+<li><strong>One-Token-Seg-All 确实能提升跨帧一致性，比逐帧 token 方案更有效</strong></li>
+</ol>
+<hr>
+<h2 id="这篇文章的本质贡献"><a href="#这篇文章的本质贡献" class="headerlink" title="这篇文章的本质贡献"></a>这篇文章的本质贡献</h2><p>一句话概括：</p>
+<blockquote>
+<p><strong>把“语言推理 + 视频时序建模 + 分割跟踪”统一进一个 Video-LLM + SAM 的框架里。</strong></p>
+</blockquote>
+<p>具体来说，核心贡献有三个：</p>
+<ol>
+<li><strong>把图像推理分割扩展到了视频</strong></li>
+<li><strong>提出适合视频分割的时序采样策略</strong></li>
+<li><strong>提出用单个 <code>&lt;TRK&gt;</code> token 统一整段视频分割与跟踪</strong></li>
+</ol>
+<hr>
+<h2 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h2><p>作者自己也承认有几个问题：</p>
+<ul>
+<li>计算开销仍然不低</li>
+<li>没有引入专门的视频 backbone</li>
+<li>做成分割专家后，聊天能力会下降</li>
+</ul>
+<hr>
+<h2 id="一句话评价"><a href="#一句话评价" class="headerlink" title="一句话评价"></a>一句话评价</h2><p>这篇文章的关键价值不只是“做了一个视频版 LISA”，而是提出了两个非常核心的机制：</p>
+<ul>
+<li><strong>Sparse Dense Sampling</strong></li>
+<li><strong>One-Token-Seg-All</strong></li>
+</ul>
+<p>前者解决“视频太长、token 太多”的问题，后者解决“跨帧一致性与跟踪”的问题。</p>
+<hr>
+<h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h2><ul>
+<li>看 <strong>XMem</strong></li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/读论文/">读论文</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://rendawei.dev/2026/03/11/VideoLISA-%E7%AC%94%E8%AE%B0/" data-title="VideoLISA 笔记 | David&#39;s life" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2025/02/10/博客简易搭建指南/"  title="博客简易搭建指南">
+ <strong>下一篇：</strong><br/> 
+ <span>博客简易搭建指南
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#VideoLISA-%E6%80%BB%E7%BB%93"><span class="toc-number">1.</span> <span class="toc-text">VideoLISA 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="toc-number">1.1.</span> <span class="toc-text">论文核心问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%B0%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.</span> <span class="toc-text">现有方法的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E5%83%8F%E6%8E%A8%E7%90%86%E5%88%86%E5%89%B2%E6%96%B9%E6%B3%95%EF%BC%88%E5%A6%82-LISA%EF%BC%89%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.1.</span> <span class="toc-text">图像推理分割方法（如 LISA）的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%A0%E7%BB%9F%E8%A7%86%E9%A2%91%E5%88%86%E5%89%B2%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.2.</span> <span class="toc-text">传统视频分割方法的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="toc-number">1.3.</span> <span class="toc-text">文章的核心思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-number">1.4.</span> <span class="toc-text">整体结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%88%9B%E6%96%B0-1%EF%BC%9ASparse-Dense-Sampling"><span class="toc-number">1.5.</span> <span class="toc-text">关键创新 1：Sparse Dense Sampling</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.5.1.</span> <span class="toc-text">要解决的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-number">1.5.2.</span> <span class="toc-text">解决办法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8"><span class="toc-number">1.5.3.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E8%B4%A8%E7%90%86%E8%A7%A3"><span class="toc-number">1.5.4.</span> <span class="toc-text">本质理解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%88%9B%E6%96%B0-2%EF%BC%9AOne-Token-Seg-All"><span class="toc-number">1.6.</span> <span class="toc-text">关键创新 2：One-Token-Seg-All</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98-1"><span class="toc-number">1.6.1.</span> <span class="toc-text">要解决的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95-1"><span class="toc-number">1.6.2.</span> <span class="toc-text">解决办法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E6%A0%B7%E8%83%BD%E8%A1%8C"><span class="toc-number">1.6.3.</span> <span class="toc-text">为什么这样能行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%89%8D%E6%8F%90"><span class="toc-number">1.6.4.</span> <span class="toc-text">关键前提</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%96%B9%E5%BC%8F"><span class="toc-number">1.7.</span> <span class="toc-text">训练方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E6%96%B9%E5%BC%8F"><span class="toc-number">1.8.</span> <span class="toc-text">推理方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E6%8F%90%E5%87%BA%E7%9A%84-Benchmark"><span class="toc-number">1.9.</span> <span class="toc-text">文章提出的 Benchmark</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E8%AE%BA"><span class="toc-number">1.10.</span> <span class="toc-text">实验结论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="toc-number">1.10.1.</span> <span class="toc-text">主要结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E6%83%B3%E8%AF%81%E6%98%8E%E7%9A%84%E7%82%B9"><span class="toc-number">1.10.2.</span> <span class="toc-text">文章想证明的点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E7%9A%84%E6%9C%AC%E8%B4%A8%E8%B4%A1%E7%8C%AE"><span class="toc-number">1.11.</span> <span class="toc-text">这篇文章的本质贡献</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%80%E9%99%90%E6%80%A7"><span class="toc-number">1.12.</span> <span class="toc-text">局限性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%AF%84%E4%BB%B7"><span class="toc-number">1.13.</span> <span class="toc-text">一句话评价</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TODO"><span class="toc-number">1.14.</span> <span class="toc-text">TODO</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github</p>
+<div class="github-card" data-github="rendaweiSIMIT" data-theme="default"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/网站技术/" title="网站技术">网站技术<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/服务器操作/" title="服务器操作">服务器操作<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/读论文/" title="读论文">读论文<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://arxiv.org/pdf/2407.19014" target="_blank" title="SparseRefine">SparseRefine</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://openaccess.thecvf.com/content_CVPR_2020/papers/Kirillov_PointRend_Image_Segmentation_As_Rendering_CVPR_2020_paper.pdf" target="_blank" title="PointRend">PointRend</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://openaccess.thecvf.com/content/CVPR2021/papers/Zhang_RefineMask_Towards_High-Quality_Instance_Segmentation_With_Fine-Grained_Features_CVPR_2021_paper.pdf" target="_blank" title="RefineMask">RefineMask</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> 我喜欢户外运动、手工、电子游戏 <br/>
+			还喜欢旅行、写博客和吃好吃的</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/rendaweiSIMIT" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:rendawei23@mails.ucas.edu.cn" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2026 
+		
+		<a href="/about" target="_blank" title="David Ren">David Ren</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
