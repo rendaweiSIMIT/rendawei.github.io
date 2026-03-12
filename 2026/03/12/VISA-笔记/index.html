@@ -1,0 +1,563 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>VISA 笔记 | David&#39;s life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="David Ren">
+    
+
+    
+    <meta name="description" content="VISA 论文简记 1. 这篇文章做了什么 这篇文章提出了一个新任务：ReasonVOS（推理式视频目标分割）。  和传统 VOS &#x2F; Referring VOS 不一样的地方在于： 它不是分割那种“外观很明确”的目标，而是分割需要推理才能确定的目标，比如：   * 哪辆车最可能赢  * 哪个交通工具载客量最大  * 那只狗害怕什么  也就是说，这篇文章想做的是：  把“视频理解 + 世界知识推理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VISA 笔记">
+<meta property="og:url" content="https://rendawei.dev/2026/03/12/VISA-%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="David&#39;s life">
+<meta property="og:description" content="VISA 论文简记 1. 这篇文章做了什么 这篇文章提出了一个新任务：ReasonVOS（推理式视频目标分割）。  和传统 VOS &#x2F; Referring VOS 不一样的地方在于： 它不是分割那种“外观很明确”的目标，而是分割需要推理才能确定的目标，比如：   * 哪辆车最可能赢  * 哪个交通工具载客量最大  * 那只狗害怕什么  也就是说，这篇文章想做的是：  把“视频理解 + 世界知识推理">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://rendawei.dev/images/visa.jpg">
+<meta property="article:published_time" content="2026-03-12T02:49:03.000Z">
+<meta property="article:modified_time" content="2026-03-12T02:57:07.620Z">
+<meta property="article:author" content="David Ren">
+<meta property="article:tag" content="读论文">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://rendawei.dev/images/visa.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="David&#39;s life" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/logo.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="David&#39;s life" title="David&#39;s life"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="David&#39;s life">David&#39;s life</a></h1>
+				<h2 class="blog-motto">欢迎来到这个博客，希望你能找到一些有用的信息！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:rendawei.dev">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2026/03/12/VISA-笔记/" title="VISA 笔记" itemprop="url">VISA 笔记</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
+		
+  <p class="article-time">
+    <time datetime="2026-03-12T02:49:03.000Z" itemprop="datePublished"> 发表于 2026-03-12</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#VISA-%E8%AE%BA%E6%96%87%E7%AE%80%E8%AE%B0"><span class="toc-number">1.</span> <span class="toc-text">VISA 论文简记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">1.1.</span> <span class="toc-text">1. 这篇文章做了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="toc-number">1.2.</span> <span class="toc-text">2. 核心思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-VISA-%E7%9A%84%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9D%97"><span class="toc-number">1.3.</span> <span class="toc-text">3. VISA 的主要模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-TFS%EF%BC%9AText-guided-Frame-Sampler"><span class="toc-number">1.3.1.</span> <span class="toc-text">(1) TFS：Text-guided Frame Sampler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Multi-Modal-LLM"><span class="toc-number">1.3.2.</span> <span class="toc-text">(2) Multi-Modal LLM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Mask-Decoder"><span class="toc-number">1.3.3.</span> <span class="toc-text">(3) Mask Decoder</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Object-Tracker"><span class="toc-number">1.3.4.</span> <span class="toc-text">(4) Object Tracker</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%AE%AD%E7%BB%83%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E7%9A%84"><span class="toc-number">1.4.</span> <span class="toc-text">4. 训练是怎么做的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E7%94%A8%E4%BA%86%E5%93%AA%E4%BA%9B%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF"><span class="toc-number">1.5.</span> <span class="toc-text">5. 这篇文章用了哪些关键技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%85%B3%E9%94%AE%E7%82%B9"><span class="toc-number">1.6.</span> <span class="toc-text">6. 关键点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%81%E7%AE%80%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%89%88"><span class="toc-number">1.7.</span> <span class="toc-text">极简一句话版</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="VISA-论文简记"><a href="#VISA-论文简记" class="headerlink" title="VISA 论文简记"></a>VISA 论文简记</h1><h2 id="1-这篇文章做了什么"><a href="#1-这篇文章做了什么" class="headerlink" title="1. 这篇文章做了什么"></a>1. 这篇文章做了什么</h2><p>这篇文章提出了一个新任务：<strong>ReasonVOS（推理式视频目标分割）</strong>。</p>
+<p>和传统 VOS &#x2F; Referring VOS 不一样的地方在于：<br>它不是分割那种“外观很明确”的目标，而是分割<strong>需要推理才能确定</strong>的目标，比如：</p>
+<ul>
+<li>哪辆车最可能赢</li>
+<li>哪个交通工具载客量最大</li>
+<li>那只狗害怕什么</li>
+</ul>
+<p>也就是说，这篇文章想做的是：</p>
+<blockquote>
+<p><strong>把“视频理解 + 世界知识推理 + 像素级分割”结合起来。</strong></p>
+</blockquote>
+<hr>
+<p><img src="/images/visa.jpg" alt="Figure1"></p>
+<h2 id="2-核心思路"><a href="#2-核心思路" class="headerlink" title="2. 核心思路"></a>2. 核心思路</h2><p>作者提出了一个框架：<strong>VISA</strong><br>全流程可以概括成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">文本指令 + 视频</span><br><span class="line">→ 找关键帧</span><br><span class="line">→ 用多模态 LLM 推理目标是谁</span><br><span class="line">→ 生成目标帧掩码</span><br><span class="line">→ 再传播到整段视频</span><br></pre></td></tr></table></figure>
+
+<p>它不是直接把整个视频全丢给 LLM，而是先缩小范围，再做推理和分割。</p>
+<hr>
+<h2 id="3-VISA-的主要模块"><a href="#3-VISA-的主要模块" class="headerlink" title="3. VISA 的主要模块"></a>3. VISA 的主要模块</h2><h3 id="1-TFS：Text-guided-Frame-Sampler"><a href="#1-TFS：Text-guided-Frame-Sampler" class="headerlink" title="(1) TFS：Text-guided Frame Sampler"></a>(1) TFS：Text-guided Frame Sampler</h3><p>作用：<strong>先找最关键的帧</strong></p>
+<p>因为长视频帧太多，如果每帧都高质量输入 LLM，token 太多，算不动。<br>所以作者先用一个文本引导的采样器，根据问题判断：</p>
+<ul>
+<li>视频中大概哪一段最相关</li>
+<li>选出一个 <strong>target frame (<code>f_tgt</code>)</strong></li>
+<li>再选一些 <strong>reference frames (<code>x_r</code>)</strong></li>
+</ul>
+<p>这里用到的是 <strong>LLaMA-VID</strong>，本质上相当于让模型先回答：</p>
+<blockquote>
+<p>“为了找到这个目标，我应该看视频的大概百分之多少位置？”</p>
+</blockquote>
+<hr>
+<h3 id="2-Multi-Modal-LLM"><a href="#2-Multi-Modal-LLM" class="headerlink" title="(2) Multi-Modal LLM"></a>(2) Multi-Modal LLM</h3><p>作用：<strong>根据目标帧 + 参考帧 + 文本，推理目标是谁</strong></p>
+<p>选中的帧先编码成视觉 token，再和文本一起输入多模态 LLM。<br>模型输出一句话，其中包含一个特殊 token：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;Seg&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这个 <code>&lt;Seg&gt;</code> 不是普通文字，而是表示：</p>
+<blockquote>
+<p>“我已经知道要分割谁了”</p>
+</blockquote>
+<p>作者取出 <code>&lt;Seg&gt;</code> 对应的最后一层 hidden state，得到一个目标语义表示 <code>h_seg</code>。</p>
+<hr>
+<h3 id="3-Mask-Decoder"><a href="#3-Mask-Decoder" class="headerlink" title="(3) Mask Decoder"></a>(3) Mask Decoder</h3><p>作用：<strong>把“目标语义”变成目标帧上的像素掩码</strong></p>
+<p>这里作者用了 <strong>SAM 的 decoder</strong>。</p>
+<p>输入是两部分：</p>
+<ul>
+<li>目标帧的视觉特征</li>
+<li><code>&lt;Seg&gt;</code> 产生的语义提示 <code>h_seg</code></li>
+</ul>
+<p>然后输出目标帧的分割结果：</p>
+<ul>
+<li><code>m_tgt</code></li>
+</ul>
+<p>所以这一部分本质上是：</p>
+<blockquote>
+<p><strong>LLM 负责决定“是谁”，SAM 负责决定“像素在哪”</strong></p>
+</blockquote>
+<hr>
+<h3 id="4-Object-Tracker"><a href="#4-Object-Tracker" class="headerlink" title="(4) Object Tracker"></a>(4) Object Tracker</h3><p>作用：<strong>把目标帧掩码传播到整个视频</strong></p>
+<p>因为前面只分割了一个目标帧，所以还要把这个结果扩展到其他帧。<br>作者这里用了 <strong>object tracker（文中是 XMem 风格的方法）</strong>，做双向传播，最后得到整段视频的 mask sequence。</p>
+<hr>
+<h2 id="4-训练是怎么做的"><a href="#4-训练是怎么做的" class="headerlink" title="4. 训练是怎么做的"></a>4. 训练是怎么做的</h2><p>训练时不是所有模块都训，而是<strong>冻结大部分 backbone，只训练少数模块</strong>。</p>
+<p>主要是：</p>
+<ul>
+<li>大模型主体基本冻结</li>
+<li>用 <strong>LoRA</strong> 做轻量微调</li>
+<li>训练 mask decoder &#x2F; MLP 这些和分割有关的部分</li>
+</ul>
+<p>损失函数有两部分：</p>
+<ul>
+<li><strong>文本生成损失</strong>：让模型学会输出正确回答和 <code>&lt;Seg&gt;</code></li>
+<li><strong>分割损失</strong>：让生成的 mask 更准（BCE + Dice）</li>
+</ul>
+<p>所以它本质上是一个：</p>
+<blockquote>
+<p><strong>“语言生成监督 + 分割监督”联合训练</strong> 的框架</p>
+</blockquote>
+<hr>
+<h2 id="5-这篇文章用了哪些关键技术"><a href="#5-这篇文章用了哪些关键技术" class="headerlink" title="5. 这篇文章用了哪些关键技术"></a>5. 这篇文章用了哪些关键技术</h2><p>可以直接记这一串：</p>
+<ul>
+<li><strong>LLaMA-VID</strong>：做关键帧选择（TFS）</li>
+<li><strong>LLaVA &#x2F; Chat-UniVi</strong>：做多模态推理</li>
+<li><strong>ViT</strong>：提取视觉特征</li>
+<li><strong>Spatial Merging</strong>：压缩视觉 token</li>
+<li><strong>LoRA</strong>：参数高效微调</li>
+<li><strong>SAM decoder</strong>：生成目标帧掩码</li>
+<li><strong>XMem &#x2F; Object Tracker</strong>：传播到整段视频</li>
+</ul>
+<p>本质上是把：</p>
+<blockquote>
+<p><strong>视频检索关键时刻 + LLM 推理 + SAM 分割 + Tracker 传播</strong></p>
+</blockquote>
+<p>串成了一条链。</p>
+<hr>
+<h2 id="6-关键点"><a href="#6-关键点" class="headerlink" title="6. 关键点"></a>6. 关键点</h2><ol>
+<li><strong>提出了新任务 ReasonVOS</strong>：不是显式描述分割，而是推理式视频分割</li>
+<li><strong>提出了 VISA</strong>：先找关键帧，再让 LLM 推理，再用 SAM 分割，再用 tracker 扩展到全视频</li>
+<li><strong>关键创新点</strong>：用 <code>&lt;Seg&gt;</code> 把 LLM 的推理结果转成可用于分割的提示表示</li>
+</ol>
+<hr>
+<h2 id="极简一句话版"><a href="#极简一句话版" class="headerlink" title="极简一句话版"></a>极简一句话版</h2><p><strong>VISA &#x3D; TFS 选关键帧 + 多模态 LLM 推理目标 + <code>&lt;Seg&gt;</code> 作为分割提示 + SAM 出目标帧 mask + Tracker 扩展到整段视频。</strong></p>
+<hr>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/读论文/">读论文</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://rendawei.dev/2026/03/12/VISA-%E7%AC%94%E8%AE%B0/" data-title="VISA 笔记 | David&#39;s life" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2026/03/11/VideoLISA-笔记/"  title="VideoLISA 笔记">
+ <strong>下一篇：</strong><br/> 
+ <span>VideoLISA 笔记
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#VISA-%E8%AE%BA%E6%96%87%E7%AE%80%E8%AE%B0"><span class="toc-number">1.</span> <span class="toc-text">VISA 论文简记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">1.1.</span> <span class="toc-text">1. 这篇文章做了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="toc-number">1.2.</span> <span class="toc-text">2. 核心思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-VISA-%E7%9A%84%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9D%97"><span class="toc-number">1.3.</span> <span class="toc-text">3. VISA 的主要模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-TFS%EF%BC%9AText-guided-Frame-Sampler"><span class="toc-number">1.3.1.</span> <span class="toc-text">(1) TFS：Text-guided Frame Sampler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Multi-Modal-LLM"><span class="toc-number">1.3.2.</span> <span class="toc-text">(2) Multi-Modal LLM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Mask-Decoder"><span class="toc-number">1.3.3.</span> <span class="toc-text">(3) Mask Decoder</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Object-Tracker"><span class="toc-number">1.3.4.</span> <span class="toc-text">(4) Object Tracker</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%AE%AD%E7%BB%83%E6%98%AF%E6%80%8E%E4%B9%88%E5%81%9A%E7%9A%84"><span class="toc-number">1.4.</span> <span class="toc-text">4. 训练是怎么做的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E7%94%A8%E4%BA%86%E5%93%AA%E4%BA%9B%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF"><span class="toc-number">1.5.</span> <span class="toc-text">5. 这篇文章用了哪些关键技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%85%B3%E9%94%AE%E7%82%B9"><span class="toc-number">1.6.</span> <span class="toc-text">6. 关键点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%81%E7%AE%80%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%89%88"><span class="toc-number">1.7.</span> <span class="toc-text">极简一句话版</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github</p>
+<div class="github-card" data-github="rendaweiSIMIT" data-theme="default"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/读论文/" title="读论文">读论文<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/网站技术/" title="网站技术">网站技术<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/服务器操作/" title="服务器操作">服务器操作<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://arxiv.org/pdf/2407.19014" target="_blank" title="SparseRefine">SparseRefine</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://openaccess.thecvf.com/content_CVPR_2020/papers/Kirillov_PointRend_Image_Segmentation_As_Rendering_CVPR_2020_paper.pdf" target="_blank" title="PointRend">PointRend</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://openaccess.thecvf.com/content/CVPR2021/papers/Zhang_RefineMask_Towards_High-Quality_Instance_Segmentation_With_Fine-Grained_Features_CVPR_2021_paper.pdf" target="_blank" title="RefineMask">RefineMask</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> 我喜欢户外运动、手工、电子游戏 <br/>
+			还喜欢旅行、写博客和吃好吃的</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/rendaweiSIMIT" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:rendawei23@mails.ucas.edu.cn" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2026 
+		
+		<a href="/about" target="_blank" title="David Ren">David Ren</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
