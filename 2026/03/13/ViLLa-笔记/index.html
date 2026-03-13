@@ -1,0 +1,472 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>ViLLa 笔记 | David&#39;s life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="David Ren">
+    
+
+    
+    <meta name="description" content="这篇文章做的是视频推理分割，也就是给模型一段视频和一句比较复杂的文本指令，让它不仅要看懂视频，还要结合语言去推理“目标到底是谁”，最后把这个目标在视频每一帧里分割出来。它和普通的 referring VOS 不一样，普通任务里的文本通常比较直接，比如“左边的人”或者“红色的车”，而 ViLLa 面对的是更复杂、更接近真实用户表达的描述。  这篇文章的核心目标，是解决前面一些方法在复杂视频场景里的问">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ViLLa 笔记">
+<meta property="og:url" content="https://rendawei.dev/2026/03/13/ViLLa-%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="David&#39;s life">
+<meta property="og:description" content="这篇文章做的是视频推理分割，也就是给模型一段视频和一句比较复杂的文本指令，让它不仅要看懂视频，还要结合语言去推理“目标到底是谁”，最后把这个目标在视频每一帧里分割出来。它和普通的 referring VOS 不一样，普通任务里的文本通常比较直接，比如“左边的人”或者“红色的车”，而 ViLLa 面对的是更复杂、更接近真实用户表达的描述。  这篇文章的核心目标，是解决前面一些方法在复杂视频场景里的问">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://rendawei.dev/images/ViLLa.jpg">
+<meta property="article:published_time" content="2026-03-13T03:20:47.000Z">
+<meta property="article:modified_time" content="2026-03-13T03:25:10.018Z">
+<meta property="article:author" content="David Ren">
+<meta property="article:tag" content="读论文">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://rendawei.dev/images/ViLLa.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="David&#39;s life" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/logo.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="David&#39;s life" title="David&#39;s life"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="David&#39;s life">David&#39;s life</a></h1>
+				<h2 class="blog-motto">欢迎来到这个博客，希望你能找到一些有用的信息！</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:rendawei.dev">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2026/03/13/ViLLa-笔记/" title="ViLLa 笔记" itemprop="url">ViLLa 笔记</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="David Ren" target="_blank" itemprop="author">David Ren</a>
+		
+  <p class="article-time">
+    <time datetime="2026-03-13T03:20:47.000Z" itemprop="datePublished"> 发表于 2026-03-13</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>这篇文章做的是视频推理分割，也就是给模型一段视频和一句比较复杂的文本指令，让它不仅要看懂视频，还要结合语言去推理“目标到底是谁”，最后把这个目标在视频每一帧里分割出来。它和普通的 referring VOS 不一样，普通任务里的文本通常比较直接，比如“左边的人”或者“红色的车”，而 ViLLa 面对的是更复杂、更接近真实用户表达的描述。</p>
+<p>这篇文章的核心目标，是解决前面一些方法在复杂视频场景里的问题。作者认为，以前的方法在简单视频上还能用，但一遇到长视频、多目标、快速运动、遮挡这些情况，就容易出问题。比如 VISA 很依赖关键帧选得准，如果一开始选错了，后面传播就会越错越多；VideoLISA 虽然做了视频建模，但它的采样方式不够自适应，而且单个分割 token 在复杂场景下不太能同时处理好多目标和它们的轨迹关系。</p>
+<p>所以 ViLLa 提出了三个核心模块，分别从不同角度解决这些问题。<br><img src="/images/ViLLa.jpg" alt="Figure1"><br>第一个模块叫 Key Segment Extractor，也就是关键片段提取器。它的作用很直接，就是先从长视频里挑出和问题最相关的片段。作者的想法是，长视频里很多内容其实和当前问题没关系，没有必要全都送进去。比如用户问“走在兽群最后面的那只斑马”，真正有用的信息只会出现在某些特定时刻。所以它先用一个视频大模型去预测和 query 最相关的起止时间段，再把这部分关键片段抽出来。这样做可以减少冗余，也让后面的模型更集中地处理有用信息。</p>
+<p>第二个模块叫 Context Synthesizer，也就是上下文合成器。这个模块主要是做文本和视觉的对齐，而且不是简单对齐，而是把“和当前问题最相关的视觉信息”注入到文本表示里。你可以理解成，模型先看用户到底在问什么，再从当前帧的视觉特征里找出最相关的线索，比如位置关系、外观、动作这些信息，然后把这些信息融合进文本 embedding。这样送进 LLM 的就不是单纯的文字，而是已经带有当前视觉上下文的文字表示。作者还进一步做了压缩，不是把所有 query 都送给 LLM，而是只保留响应最高、最相关的那几个，让输入更紧凑。</p>
+<p>第三个模块是这篇文章最重要的部分，叫 Hierarchical Temporal Synchronizer，也就是分层时间同步器。这个模块是专门为视频设计的，因为视频分割最难的地方不只是“这一帧分对”，还要“前后帧都一致”。作者这里设计了两种层级的 segmentation token，一种是帧级 token，主要关注当前帧里的目标；另一种是视频级 token，主要关注整个视频范围里的目标身份和整体信息。然后通过一个类似 transformer decoder 的结构，让这两类 token 在时间维度上不断交互、同步。帧级 token 提供细节，视频级 token 提供整体一致性，二者反复融合之后，最后得到更稳定的分割表示。这样做的好处是，在多目标、遮挡、快速运动这些复杂情况下，模型不会只盯着当前帧的局部信息，而是能同时参考整段视频里的目标信息。</p>
+<p>整个 ViLLa 的流程其实可以概括成一条很清晰的链。先输入视频和文本指令，然后关键片段提取器从长视频里找到和问题最相关的部分；接着视觉编码器提取这些片段的多尺度视觉特征，同时文本编码器把文本和视觉做初步对齐；然后上下文合成器把和问题最相关的视觉线索融合进文本表示；再把这些增强后的文本特征、视觉特征和预定义的分割 token 一起送进大语言模型；大语言模型一边输出文本回答，一边输出分割 token；最后这些 token 再进入分层时间同步器，结合多尺度视觉特征，生成每一帧的分割结果。</p>
+<p>训练的时候，这个模型是端到端训的，既有文本生成损失，也有分割损失。也就是说，模型不仅要学会“回答得对”，还要学会“分割得准”。分割损失同时约束视频级和帧级表示，所以它不是只训练单帧分割能力，而是在训练时就显式让模型学会跨帧的一致性。</p>
+<p>除了方法本身，这篇文章还自己构建了一个新数据集，叫 VideoReasonSeg。这个数据集就是为了专门评估视频推理分割而做的，里面既有分割标注，也有多项选择题形式的问答。作者这样设计，是因为如果全都用开放问答来评估，容易引入大模型评分偏差；而多项选择题更稳定，更好量化推理能力。这个数据集里同时包含短视频和长视频，也专门覆盖了多目标、快速运动和长视频遮挡这些复杂场景。</p>
+<p>ViLLa 想解决的是复杂视频里的推理分割问题，它不是简单地把图像推理分割搬到视频上，而是专门加入了关键片段选择、文本视觉上下文融合，以及视频级和帧级 token 的时间同步这三步。前两步解决“看什么”和“怎么理解”，最后一步解决“怎么在整段视频里稳定地分出来”。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/读论文/">读论文</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://rendawei.dev/2026/03/13/ViLLa-%E7%AC%94%E8%AE%B0/" data-title="ViLLa 笔记 | David&#39;s life" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2026/03/12/VISA-笔记/"  title="VISA 笔记">
+ <strong>下一篇：</strong><br/> 
+ <span>VISA 笔记
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github</p>
+<div class="github-card" data-github="rendaweiSIMIT" data-theme="default"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/读论文/" title="读论文">读论文<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/网站技术/" title="网站技术">网站技术<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/服务器操作/" title="服务器操作">服务器操作<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://arxiv.org/pdf/2407.19014" target="_blank" title="SparseRefine">SparseRefine</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://openaccess.thecvf.com/content_CVPR_2020/papers/Kirillov_PointRend_Image_Segmentation_As_Rendering_CVPR_2020_paper.pdf" target="_blank" title="PointRend">PointRend</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://openaccess.thecvf.com/content/CVPR2021/papers/Zhang_RefineMask_Towards_High-Quality_Instance_Segmentation_With_Fine-Grained_Features_CVPR_2021_paper.pdf" target="_blank" title="RefineMask">RefineMask</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> 我喜欢户外运动、手工、电子游戏 <br/>
+			还喜欢旅行、写博客和吃好吃的</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/rendaweiSIMIT" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:rendawei23@mails.ucas.edu.cn" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2026 
+		
+		<a href="/about" target="_blank" title="David Ren">David Ren</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
